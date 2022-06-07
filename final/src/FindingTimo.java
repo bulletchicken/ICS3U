@@ -45,24 +45,24 @@ public class FindingTimo {
 	}
 
 	public void update() {
- 
-		char status = 'o';
+		
 		
 		for(int i = 0; i < 20; i++) System.out.println();
-		System.out.println(FindingTimo.map[timo.yCord][timo.xCord][timo.zCord]);
-		map[timo.yCord][timo.xCord][timo.zCord] = status;
 		map[player.yCord][player.xCord][player.zCord] = 'x';
 		
-		if(onTurtle()) {
-			System.out.println("Caputred the turtle!");
+		if(!timo.hasTurtle||!onTurtle()) {
+			map[timo.yCord][timo.xCord][timo.zCord] = '!';
+		} else {
+			map[timo.yCord][timo.xCord][timo.zCord] = 'o';
 		}
+		System.out.print(player.hasTurtle);
 		displayGrid(player.zCord);
 	}
 	
 	public boolean onTurtle() {
 		if(timo.xCord==player.xCord&&timo.yCord==player.yCord&&timo.zCord==player.zCord) {
 			player.hasTurtle = true;
-			
+			System.out.println("Caputred the turtle!");
 			return true;
 		}
 		

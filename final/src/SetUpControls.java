@@ -74,7 +74,6 @@ public class SetUpControls extends JFrame implements KeyListener{
 			if(yPlayer>0) {
 				FindingTimo.map[yPlayer][xPlayer][zPlayer] = 'o';
 				FindingTimo.player.yCord--;
-				System.out.println(FindingTimo.map[yPlayer++][xPlayer][zPlayer]);
 				fT.update();
 			} else {
 				System.out.println("Wall!");
