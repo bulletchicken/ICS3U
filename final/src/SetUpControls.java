@@ -13,6 +13,7 @@ public class SetUpControls extends JFrame implements KeyListener{
 		frame.setBounds(300, 300, 600, 300);
 		frame.setVisible(true);
 		frame.getContentPane().setLayout(null);
+		frame.isAlwaysOnTop();
 		frame.setDefaultCloseOperation(EXIT_ON_CLOSE);
 		
 		//give up button
@@ -72,7 +73,6 @@ public class SetUpControls extends JFrame implements KeyListener{
 		//if user presses w
 		case 'w':
 			if(yPlayer>0) {
-				FindingTimo.map[yPlayer][xPlayer][zPlayer] = 'o';
 				FindingTimo.player.yCord--;
 				fT.update();
 			} else {
@@ -83,7 +83,6 @@ public class SetUpControls extends JFrame implements KeyListener{
 		//if user presses s
 		case 's':
 			if(yPlayer<fT.mLength-1) {
-				FindingTimo.map[yPlayer][xPlayer][zPlayer] = 'o';
 				FindingTimo.player.yCord++;
 				fT.update();
 			} else {
@@ -94,7 +93,6 @@ public class SetUpControls extends JFrame implements KeyListener{
 		//checks if user presses a
 		case 'a':
 			if(xPlayer>0) {
-				FindingTimo.map[yPlayer][xPlayer][zPlayer] = 'o';
 				FindingTimo.player.xCord--;
 				fT.update();
 			} else {
@@ -105,7 +103,6 @@ public class SetUpControls extends JFrame implements KeyListener{
 		//checks if user presses d
 		case 'd':
 			if(xPlayer<fT.mWidth-1) {
-				FindingTimo.map[yPlayer][xPlayer][zPlayer] = 'o';
 				FindingTimo.player.xCord++;
 				fT.update();
 			} else {
@@ -119,7 +116,7 @@ public class SetUpControls extends JFrame implements KeyListener{
 		//checks if user presses up
 		case KeyEvent.VK_UP:
 			if(zPlayer<2) {
-				FindingTimo.map[yPlayer][xPlayer][zPlayer] = 'o';
+				fT.map[fT.player.yCord][fT.player.xCord][fT.player.zCord] = fT.visionCones;
 				FindingTimo.player.zCord++;
 				fT.update();
 			} else {
@@ -130,7 +127,7 @@ public class SetUpControls extends JFrame implements KeyListener{
 		//checks if user presses down
 		case KeyEvent.VK_DOWN:
 			if(zPlayer>0) {
-				FindingTimo.map[yPlayer][xPlayer][zPlayer] = 'o';
+				fT.map[fT.player.yCord][fT.player.xCord][fT.player.zCord] = fT.visionCones;
 				FindingTimo.player.zCord--;
 				fT.update();
 			} else {
@@ -138,9 +135,6 @@ public class SetUpControls extends JFrame implements KeyListener{
 			} 
 			break;
 		}
-		
-		
-		
 		
 	}
 	@Override
