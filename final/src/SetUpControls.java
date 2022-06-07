@@ -6,10 +6,14 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 public class SetUpControls extends JFrame implements KeyListener{
 
+	static FindingTimo fT = new FindingTimo();
+	static JFrame frame = new JFrame("Controls Window (Keep this tab on top to use controls)");
+	//making jframe a global so I can access it from another method and ultimately another class
+	
 	public static void setControls(){
 		
 		//set the frame
-		JFrame frame = new JFrame("Controls Window (Keep this tab on top to use controls)");
+		
 		frame.setBounds(300, 300, 600, 300);
 		frame.setVisible(true);
 		frame.getContentPane().setLayout(null);
@@ -48,7 +52,7 @@ public class SetUpControls extends JFrame implements KeyListener{
 		winButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				System.out.println("Win!");
+				fT.endingScreen();
 			}
 		});
 		
@@ -59,7 +63,7 @@ public class SetUpControls extends JFrame implements KeyListener{
 		
 	}
 	
-	FindingTimo fT = new FindingTimo();
+	
 	@Override
 	public void keyPressed(KeyEvent e) {
 		
@@ -146,6 +150,10 @@ public class SetUpControls extends JFrame implements KeyListener{
 	public void keyTyped(KeyEvent e) {
 		
 		
+	}
+	
+	public static void closeWindow() {
+		frame.dispose();
 	}
 	
 }

@@ -1,87 +1,127 @@
 import java.io.*;
 
 public class FindingTimo {
-//testgit
+	//testgit
 	BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
 	static Character timo = new Character();
 	static Character player = new Character();
-	
+	static Character finish = new Character();
+
 	final char visionCones = '.';
 
 	final static int mLength = 15; //vertical
 	final static int mWidth = 15; //horizontal
 	final static int height = 3; //up down
+	
+	int turtleSpeed = 0;
 
 	static char [][][] map = new char[mLength][mWidth][height];
 
 
-
 	public static void main(String[]args) {
 		new FindingTimo();
-		SetUpControls.setControls();
+		
 		FindingTimo fT = new FindingTimo();
 
 		fT.run();
 
 	}
 	
-	public int turtle(){
-		return 1;
+
+	public void turtleMove(){
+		final char poop = 'o';
+		byte direction = (byte)(1+Math.random()*4);
+		switch(direction) {
+		case 1:
+			if(timo.yCord>0&&map[timo.yCord-1][timo.xCord][timo.zCord]!=poop) {
+				map[timo.yCord][timo.xCord][timo.zCord] = poop;
+				timo.yCord--;
+				
+			} else {
+				System.out.println("blocked");
+				turtleMove();
+			}
+			break;
+		case 2:
+			if(timo.yCord<mLength-1&&map[timo.yCord+1][timo.xCord][timo.zCord]!=poop) {
+				map[timo.yCord][timo.xCord][timo.zCord] = poop;
+				timo.yCord++;
+				
+			} else {
+				System.out.println("blocked");
+				turtleMove();
+			}
+			break;
+		case 3:
+			if(timo.xCord>0&&map[timo.yCord][timo.xCord-1][timo.zCord]!=poop) {
+				map[timo.yCord][timo.xCord][timo.zCord] = poop;
+				timo.xCord--;
+				
+			}else {
+				System.out.println("blocked");
+				turtleMove();
+			}
+			break;
+		case 4:
+			if(timo.xCord<mWidth-1&&map[timo.yCord][timo.xCord+1][timo.zCord]!=poop) {
+				map[timo.yCord][timo.xCord][timo.zCord] = poop;
+				timo.xCord++;
+				
+			}else {
+				System.out.println("blocked");
+				turtleMove();
+			}
+			break;
+			
+		}
+		
+		
+	}
+	public boolean canBeSeen(Character inQuestion) {
+		if(map[inQuestion.yCord][inQuestion.xCord][inQuestion.zCord]==visionCones) {
+			return true;
+		}
+		return false;
 	}
 
 	public void vision() {
 		try{
 			map[player.yCord+1][player.xCord][player.zCord] = visionCones;
-		}catch(Exception e){
 			
+			//corner piece
+			map[player.yCord+1][player.xCord+1][player.zCord] = visionCones;
+			map[player.yCord+1][player.xCord-1][player.zCord] = visionCones;
+		}catch(Exception e){
+
 		}
-		
 		try{
 			map[player.yCord-1][player.xCord][player.zCord] = visionCones;
-		}catch(Exception e){
 			
+			//corner piece
+			map[player.yCord-1][player.xCord+1][player.zCord] = visionCones;
+			map[player.yCord-1][player.xCord-1][player.zCord] = visionCones;
+		}catch(Exception e){
+
 		}
-		
+
 		try{
 			map[player.yCord][player.xCord+1][player.zCord] = visionCones;
 		}catch(Exception e){
-			
+
 		}
-		
+
 		try{
 			map[player.yCord][player.xCord-1][player.zCord] = visionCones;
 		}catch(Exception e){
-			
-		}
-		
-		//corner pieces
-		try{
-			map[player.yCord+1][player.xCord+1][player.zCord] = visionCones;
-		}catch(Exception e){
-			
-		}
-		try{
-			map[player.yCord+1][player.xCord-1][player.zCord] = visionCones;
-		}catch(Exception e){
-			
-		}
-		try{
-			map[player.yCord-1][player.xCord+1][player.zCord] = visionCones;
-		}catch(Exception e){
-			
-		}
-		try{
-			map[player.yCord-1][player.xCord-1][player.zCord] = visionCones;
-		}catch(Exception e){
-			
+
 		}
 	}
 
-	public void displayGrid(int floor) {
-		String[]alphabet = "abcdefghijklmnopqrstuvwxyz".split("");
+	public void displayGrid(int floor, String[]alphabet) {
+
 		System.out.println("(" + alphabet[player.xCord] + ", "+(player.yCord+1) + ", " + (player.zCord+1) + ")");
-		
+
 		for(int i = 0; i < map[0].length; i++) {
 			System.out.print(alphabet[i] + " ");
 		}
@@ -91,51 +131,56 @@ public class FindingTimo {
 			for(int j = 0; j < map[0].length; j++) {
 				System.out.print(map[i][j][floor] + " ");
 			}
-			System.out.println(i+1);
+			System.out.println(i+1);                                                                                                                                                                                                                                                                          
 		}
 	}
 
 	public void update() {
-		
+		String[]alphabet = "abcdefghijklmnopqrstuvwxyz".split("");
 		for(int i = 0; i < 20; i++) System.out.println(); //to clear screen
-		
+		turtleMove();
 		vision();
 		map[timo.yCord][timo.xCord][timo.zCord] = '!';
 		map[player.yCord][player.xCord][player.zCord] = 'x';
-		if(timo.hasTurtle||onTurtle()) {
-			
+		if(player.found||onTurtle()) {
+			System.out.println("Return the turtle to coordinates (" + alphabet[finish.xCord] + ", " + (finish.yCord+1) + ", " + (finish.zCord+1) + ")");
 			if(bedroom()){
 				endingScreen();
 				return; //breaks the method
 			}
 		}
+
+		System.out.print(player.found);
 		
-		System.out.print(player.hasTurtle);
-		displayGrid(player.zCord);
+		displayGrid(player.zCord, alphabet);
 	}
-	
+
 	public boolean bedroom() {
-		
+
 		//make a random point the player has to reach on another floor
-		if(player.yCord == 7 && player.xCord == 7 && player.zCord == 0){
-			System.out.println("hit");
+		if(player.yCord == finish.yCord && player.xCord == finish.xCord && player.zCord == finish.zCord){
 			return true;
 		}
-		System.out.println("miss");
 		return false;
 	}
-	
+
 	public boolean onTurtle() {
 		if(timo.xCord==player.xCord&&timo.yCord==player.yCord&&timo.zCord==player.zCord) {
-			player.hasTurtle = true;
+			player.found = true;
 			System.out.println("Caputred the turtle!");
+			
+			finish.xCord = (int)(Math.random()*15);
+			finish.yCord = (int)(Math.random()*15);
+			finish.zCord = (int)(Math.random()*height);
+			
+			
 			return true;
 		}
 		return false;
 	}
 
 	public void run() {
-
+		SetUpControls.setControls();
 		//starting cords
 		timo.xCord = (int)(Math.random()*15);
 		timo.yCord = (int)(Math.random()*15);
@@ -158,6 +203,7 @@ public class FindingTimo {
 		update();
 	}
 	public void endingScreen() {
+		SetUpControls.closeWindow();
 		System.out.println("You win");
 	}
 
