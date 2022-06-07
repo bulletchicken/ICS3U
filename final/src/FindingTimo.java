@@ -1,7 +1,7 @@
 import java.io.*;
 
 public class FindingTimo {
-
+//testgit
 	BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
 	static Character timo = new Character();
