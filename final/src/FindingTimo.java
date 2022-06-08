@@ -27,11 +27,9 @@ public class FindingTimo {
 	final static int mWidth = 15; //horizontal
 	final static int height = 3; //up down
 	
-	int turtleSpeed = 0;
 	int move = 0; //make a universal move counter to display number of moves and use to do turtle speed if(move%4==0) or smth
 
 	static char [][][] map = new char[mLength][mWidth][height];
-
 
 	public static void main(String[]args) {
 		new FindingTimo();
@@ -47,8 +45,6 @@ public class FindingTimo {
 		final byte maxNumOfOptions = 5;
 		Moves availableMoves = new Moves();
 		availableMoves.options = new byte[maxNumOfOptions];
-		
-
 		
 		//checks which sides are open. adds them into a draw. //if nothing in draw, goes up and down
 		
@@ -96,6 +92,7 @@ public class FindingTimo {
 		
 		byte direction;
 		final char poop = 'o';
+		
 		Moves turtleDirection = moveGenerator(timo, poop);
 		
 		if(turtleDirection.numOfOptions == 0) { //meaning all directions were skipped and none added to options list
@@ -198,8 +195,15 @@ public class FindingTimo {
 		String[]alphabet = "abcdefghijklmnopqrstuvwxyz".split("");
 		for(int i = 0; i < 20; i++) System.out.println(); //to clear screen
 		vision();
-		turtleMove();
-		map[timo.yCord][timo.xCord][timo.zCord] = '!';
+		move++;
+		if(!timo.found){
+			if(move%3==0){
+				turtleMove();
+			}
+			if(canBeSeen(timo)){
+				map[timo.yCord][timo.xCord][timo.zCord] = '!';
+			}
+		}
 		map[player.yCord][player.xCord][player.zCord] = 'x';
 		if(player.found||onTurtle()) {
 			System.out.println("Return the turtle to coordinates (" + alphabet[finish.xCord] + ", " + (finish.yCord+1) + ", " + (finish.zCord+1) + ")");
@@ -209,7 +213,7 @@ public class FindingTimo {
 			}
 		}
 
-		System.out.print(player.found);
+		System.out.print(timo.found);
 		
 		displayGrid(player.zCord, alphabet);
 	}
@@ -225,7 +229,7 @@ public class FindingTimo {
 
 	public boolean onTurtle() {
 		if(timo.xCord==player.xCord&&timo.yCord==player.yCord&&timo.zCord==player.zCord) {
-			player.found = true;
+			timo.found = true;
 			System.out.println("Caputred the turtle!");
 			
 			finish.xCord = (int)(Math.random()*15);
