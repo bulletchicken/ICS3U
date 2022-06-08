@@ -1,19 +1,19 @@
 import java.io.*;
 
-class Character {
-	int xCord;
-	int yCord;
-	int zCord;
-	boolean found;
-}
-
-class Moves{
-	byte[]options;
-	byte randomDirection;
-	byte numOfOptions;
-}
 public class FindingTimo {
-	//testgit
+	
+	static class Character {
+		int xCord;
+		int yCord;
+		int zCord;
+		boolean found;
+	}
+
+	static class Moves{
+		byte[]options;
+		byte randomDirection;
+		byte numOfOptions;
+	}
 
 	BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
@@ -30,7 +30,8 @@ public class FindingTimo {
 	int move = 0; //make a universal move counter to display number of moves and use to do turtle speed if(move%4==0) or smth
 
 	static char [][][] map = new char[mLength][mWidth][height];
-
+	static byte [][][] unseenMap = new byte[mLength][mWidth][height];
+ 
 	public static void main(String[]args) {
 		new FindingTimo();
 		
@@ -55,23 +56,25 @@ public class FindingTimo {
 		 * 3 = left
 		 * 4 = right
 		 */
+		
+		
 		byte indexOfOption = 0;
-		if(movement.yCord>0&&map[timo.yCord-1][timo.xCord][timo.zCord]!=poop) {
+		if(movement.yCord>0&&unseenMap[timo.yCord-1][timo.xCord][timo.zCord]==0) {
 			System.out.println("can move forward");
 			availableMoves.options[indexOfOption] = 1;
 			indexOfOption++;
 		}
-		if(movement.yCord<mLength-1&&map[timo.yCord+1][timo.xCord][timo.zCord]!=poop) {
+		if(movement.yCord<mLength-1&&unseenMap[timo.yCord+1][timo.xCord][timo.zCord]==0) {
 			System.out.println("can move backwards");
 			availableMoves.options[indexOfOption] = 2;
 			indexOfOption++;
 		}
-		if(movement.xCord>0&&map[timo.yCord][timo.xCord-1][timo.zCord]!=poop) {
+		if(movement.xCord>0&&unseenMap[timo.yCord][timo.xCord-1][timo.zCord]==0) {
 			System.out.println("can move left");
 			availableMoves.options[indexOfOption] = 3;
 			indexOfOption++;
 		}
-		if(movement.xCord<mWidth-1&&map[timo.yCord][timo.xCord+1][timo.zCord]!=poop) {
+		if(movement.xCord<mWidth-1&&unseenMap[timo.yCord][timo.xCord+1][timo.zCord]==0) {
 			System.out.println("can move right");
 			availableMoves.options[indexOfOption] = 4;
 			indexOfOption++;
@@ -106,34 +109,47 @@ public class FindingTimo {
 		
 		case 0: //up down in case the turtle is trapped in its own poop
 			if(timo.zCord<height-1) { //zcords should be measured and compared invididually
-				map[timo.yCord][timo.xCord][timo.zCord] = poop;
+				unseenMap[timo.yCord][timo.xCord][timo.zCord] = (byte) move;
 				timo.zCord++;
 			} 
 			else if(timo.zCord>0) {
-				map[timo.yCord][timo.xCord][timo.zCord] = poop;
+				unseenMap[timo.yCord][timo.xCord][timo.zCord] = (byte) move;
 				timo.zCord--;
 			}
 			break;
 		case 1: //forward
-			map[timo.yCord][timo.xCord][timo.zCord] = poop;
+			unseenMap[timo.yCord][timo.xCord][timo.zCord] = (byte) move;
 			timo.yCord--;
 			break;
 		case 2: //backward
-			map[timo.yCord][timo.xCord][timo.zCord] = poop;
+			unseenMap[timo.yCord][timo.xCord][timo.zCord] = (byte) move;
 			timo.yCord++;
 			break;
 		case 3: //left
-			map[timo.yCord][timo.xCord][timo.zCord] = poop;
+			unseenMap[timo.yCord][timo.xCord][timo.zCord] = (byte) move;
 			timo.xCord--;
 			break;
 		case 4: //right
-			map[timo.yCord][timo.xCord][timo.zCord] = poop;
+			unseenMap[timo.yCord][timo.xCord][timo.zCord] = (byte) move;
 			timo.xCord++;
 			break;
 		}
 		
 	}
 	
+	public void poopPlacement(int playerYCord, int playerXCord, int playerZCord) {
+		char poop = 'o';
+		//if main map has vision cone on same place where other map has poop
+		
+		
+		//statement to check if vision has discovered poop or not
+		if(map[playerYCord][playerXCord][playerZCord]== visionCones && unseenMap[timo.yCord][timo.xCord][timo.zCord]!=0) {
+			map[timo.yCord][timo.xCord][timo.zCord]=poop;
+		} else {
+			map[playerYCord][playerXCord][playerZCord]=visionCones;
+		}
+	}
+	//have to compare unseenMap everytime vision is called.
 	public boolean canBeSeen(Character inQuestion) {
 		if(map[inQuestion.yCord][inQuestion.xCord][inQuestion.zCord]==visionCones) {
 			return true;
@@ -143,35 +159,35 @@ public class FindingTimo {
 
 	public void vision() {
 		try{
-			map[player.yCord+1][player.xCord][player.zCord] = visionCones;
+			poopPlacement(player.yCord+1, player.xCord, player.zCord);
+			//corner piece
+			poopPlacement(player.yCord+1, player.xCord+1, player.zCord);
+			poopPlacement(player.yCord+1, player.xCord-1, player.zCord);
+		}catch(Exception e){
+			
+		}
+		try{
+			poopPlacement(player.yCord-1, player.xCord, player.zCord);
 			
 			//corner piece
-			map[player.yCord+1][player.xCord+1][player.zCord] = visionCones;
-			map[player.yCord+1][player.xCord-1][player.zCord] = visionCones;
+			poopPlacement(player.yCord-1, player.xCord+1, player.zCord);
+			poopPlacement(player.yCord-1, player.xCord-1, player.zCord);
 		}catch(Exception e){
-
-		}
-		try{
-			map[player.yCord-1][player.xCord][player.zCord] = visionCones;
 			
-			//corner piece
-			map[player.yCord-1][player.xCord+1][player.zCord] = visionCones;
-			map[player.yCord-1][player.xCord-1][player.zCord] = visionCones;
+		}
+
+		try{
+			poopPlacement(player.yCord, player.xCord+1, player.zCord);
 		}catch(Exception e){
 
 		}
 
 		try{
-			map[player.yCord][player.xCord+1][player.zCord] = visionCones;
+			poopPlacement(player.yCord, player.xCord-1, player.zCord);
 		}catch(Exception e){
 
 		}
-
-		try{
-			map[player.yCord][player.xCord-1][player.zCord] = visionCones;
-		}catch(Exception e){
-
-		}
+		
 	}
 
 	public void displayGrid(int floor, String[]alphabet) {
@@ -204,6 +220,8 @@ public class FindingTimo {
 				map[timo.yCord][timo.xCord][timo.zCord] = '!';
 			}
 		}
+		System.out.println(alphabet[timo.yCord] +" "+ timo.xCord +" "+ (timo.zCord+1));
+		System.out.println(move);
 		map[player.yCord][player.xCord][player.zCord] = 'x';
 		if(player.found||onTurtle()) {
 			System.out.println("Return the turtle to coordinates (" + alphabet[finish.xCord] + ", " + (finish.yCord+1) + ", " + (finish.zCord+1) + ")");
@@ -235,7 +253,6 @@ public class FindingTimo {
 			finish.xCord = (int)(Math.random()*15);
 			finish.yCord = (int)(Math.random()*15);
 			finish.zCord = (int)(Math.random()*height);
-			
 			
 			return true;
 		}
