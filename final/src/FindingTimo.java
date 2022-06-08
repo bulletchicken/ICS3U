@@ -1,7 +1,20 @@
 import java.io.*;
 
+class Character {
+	int xCord;
+	int yCord;
+	int zCord;
+	boolean found;
+}
+
+class Moves{
+	byte[]options;
+	byte randomDirection;
+	byte numOfOptions;
+}
 public class FindingTimo {
 	//testgit
+
 	BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
 	static Character timo = new Character();
@@ -15,6 +28,7 @@ public class FindingTimo {
 	final static int height = 3; //up down
 	
 	int turtleSpeed = 0;
+	int move = 0; //make a universal move counter to display number of moves and use to do turtle speed if(move%4==0) or smth
 
 	static char [][][] map = new char[mLength][mWidth][height];
 
@@ -27,57 +41,102 @@ public class FindingTimo {
 		fT.run();
 
 	}
-	
 
-	public void turtleMove(){
-		final char poop = 'o';
-		byte direction = (byte)(1+Math.random()*4);
-		switch(direction) {
-		case 1:
-			if(timo.yCord>0&&map[timo.yCord-1][timo.xCord][timo.zCord]!=poop) {
-				map[timo.yCord][timo.xCord][timo.zCord] = poop;
-				timo.yCord--;
-				
-			} else {
-				System.out.println("blocked");
-				turtleMove();
-			}
-			break;
-		case 2:
-			if(timo.yCord<mLength-1&&map[timo.yCord+1][timo.xCord][timo.zCord]!=poop) {
-				map[timo.yCord][timo.xCord][timo.zCord] = poop;
-				timo.yCord++;
-				
-			} else {
-				System.out.println("blocked");
-				turtleMove();
-			}
-			break;
-		case 3:
-			if(timo.xCord>0&&map[timo.yCord][timo.xCord-1][timo.zCord]!=poop) {
-				map[timo.yCord][timo.xCord][timo.zCord] = poop;
-				timo.xCord--;
-				
-			}else {
-				System.out.println("blocked");
-				turtleMove();
-			}
-			break;
-		case 4:
-			if(timo.xCord<mWidth-1&&map[timo.yCord][timo.xCord+1][timo.zCord]!=poop) {
-				map[timo.yCord][timo.xCord][timo.zCord] = poop;
-				timo.xCord++;
-				
-			}else {
-				System.out.println("blocked");
-				turtleMove();
-			}
-			break;
-			
+	public Moves moveGenerator(Character movement, char poop) {
+		
+		final byte maxNumOfOptions = 5;
+		Moves availableMoves = new Moves();
+		availableMoves.options = new byte[maxNumOfOptions];
+		
+
+		
+		//checks which sides are open. adds them into a draw. //if nothing in draw, goes up and down
+		
+		//adds the directions into a raffel!
+		
+		/* 1 = forward
+		 * 2 = back
+		 * 3 = left
+		 * 4 = right
+		 */
+		byte indexOfOption = 0;
+		if(movement.yCord>0&&map[timo.yCord-1][timo.xCord][timo.zCord]!=poop) {
+			System.out.println("can move forward");
+			availableMoves.options[indexOfOption] = 1;
+			indexOfOption++;
+		}
+		if(movement.yCord<mLength-1&&map[timo.yCord+1][timo.xCord][timo.zCord]!=poop) {
+			System.out.println("can move backwards");
+			availableMoves.options[indexOfOption] = 2;
+			indexOfOption++;
+		}
+		if(movement.xCord>0&&map[timo.yCord][timo.xCord-1][timo.zCord]!=poop) {
+			System.out.println("can move left");
+			availableMoves.options[indexOfOption] = 3;
+			indexOfOption++;
+		}
+		if(movement.xCord<mWidth-1&&map[timo.yCord][timo.xCord+1][timo.zCord]!=poop) {
+			System.out.println("can move right");
+			availableMoves.options[indexOfOption] = 4;
+			indexOfOption++;
 		}
 		
+		for(int i = 0; i < 5; i++) {
+			System.out.println(availableMoves.options[i]);
+		}
+		
+		availableMoves.numOfOptions = indexOfOption;
+		
+		availableMoves.randomDirection = (byte)(Math.random()*indexOfOption); //200 iq numOfOptions strat
+		System.out.println("dfsdf" + (byte)(Math.random()*indexOfOption));
+		return availableMoves;
 		
 	}
+	public void turtleMove(){
+		
+		byte direction;
+		final char poop = 'o';
+		Moves turtleDirection = moveGenerator(timo, poop);
+		
+		if(turtleDirection.numOfOptions == 0) { //meaning all directions were skipped and none added to options list
+			direction = 0;
+		}
+		else {
+			direction = turtleDirection.options[turtleDirection.randomDirection];
+		}
+		System.out.println(direction);
+		switch(direction) {
+		
+		case 0: //up down in case the turtle is trapped in its own poop
+			if(timo.zCord<height-1) { //zcords should be measured and compared invididually
+				map[timo.yCord][timo.xCord][timo.zCord] = poop;
+				timo.zCord++;
+			} 
+			else if(timo.zCord>0) {
+				map[timo.yCord][timo.xCord][timo.zCord] = poop;
+				timo.zCord--;
+			}
+			break;
+		case 1: //forward
+			map[timo.yCord][timo.xCord][timo.zCord] = poop;
+			timo.yCord--;
+			break;
+		case 2: //backward
+			map[timo.yCord][timo.xCord][timo.zCord] = poop;
+			timo.yCord++;
+			break;
+		case 3: //left
+			map[timo.yCord][timo.xCord][timo.zCord] = poop;
+			timo.xCord--;
+			break;
+		case 4: //right
+			map[timo.yCord][timo.xCord][timo.zCord] = poop;
+			timo.xCord++;
+			break;
+		}
+		
+	}
+	
 	public boolean canBeSeen(Character inQuestion) {
 		if(map[inQuestion.yCord][inQuestion.xCord][inQuestion.zCord]==visionCones) {
 			return true;
@@ -138,8 +197,8 @@ public class FindingTimo {
 	public void update() {
 		String[]alphabet = "abcdefghijklmnopqrstuvwxyz".split("");
 		for(int i = 0; i < 20; i++) System.out.println(); //to clear screen
-		turtleMove();
 		vision();
+		turtleMove();
 		map[timo.yCord][timo.xCord][timo.zCord] = '!';
 		map[player.yCord][player.xCord][player.zCord] = 'x';
 		if(player.found||onTurtle()) {
@@ -215,3 +274,5 @@ public class FindingTimo {
 		return br.readLine();
 	}
 }
+
+
