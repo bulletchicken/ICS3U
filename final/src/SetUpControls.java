@@ -19,7 +19,7 @@ public class SetUpControls extends JFrame implements KeyListener{
 		frame.getContentPane().setLayout(null);
 		frame.isAlwaysOnTop();
 		frame.setDefaultCloseOperation(EXIT_ON_CLOSE);
-		
+		frame.getContentPane().setBackground(Color.blue.darker().darker().darker());
 		//give up button
 		JButton giveUp = new JButton("Give up");
 		frame.add(giveUp);
@@ -70,6 +70,11 @@ public class SetUpControls extends JFrame implements KeyListener{
 		int yPlayer = FindingTimo.player.yCord;
 		int xPlayer = FindingTimo.player.xCord;
 		int zPlayer = FindingTimo.player.zCord;
+		
+		int yTurtle = FindingTimo.timo.yCord;
+		int xTurtle = FindingTimo.timo.xCord;
+		int zTurtle = FindingTimo.timo.zCord;
+		
 		char move = e.getKeyChar();
 		
 		switch(move) {
@@ -77,6 +82,12 @@ public class SetUpControls extends JFrame implements KeyListener{
 		//if user presses w
 		case 'w':
 			if(yPlayer>0) {
+				if(Math.abs(yPlayer-yTurtle)>Math.abs((yPlayer-1)-(yTurtle))){
+					//if within a certain range, print even hotter
+					frame.getContentPane().setBackground(Color.red.darker().darker().darker());
+				} else {
+					frame.getContentPane().setBackground(Color.blue.darker().darker().darker());
+				}
 				FindingTimo.player.yCord--;
 				fT.update();
 			} else {
@@ -86,7 +97,13 @@ public class SetUpControls extends JFrame implements KeyListener{
 			
 		//if user presses s
 		case 's':
-			if(yPlayer<fT.mLength-1) {
+			if(yPlayer<FindingTimo.mLength-1) {
+				if(Math.abs(yPlayer-yTurtle)>Math.abs((yPlayer+1)-(yTurtle))){
+					//if within a certain range, print even hotter
+					frame.getContentPane().setBackground(Color.red.darker().darker().darker());
+				} else {
+					frame.getContentPane().setBackground(Color.blue.darker().darker().darker());
+				}
 				FindingTimo.player.yCord++;
 				fT.update();
 			} else {
@@ -97,6 +114,12 @@ public class SetUpControls extends JFrame implements KeyListener{
 		//checks if user presses a
 		case 'a':
 			if(xPlayer>0) {
+				if(Math.abs(xPlayer-xTurtle)>Math.abs((xPlayer-1)-(xTurtle))){
+					//if within a certain range, print even hotter
+					frame.getContentPane().setBackground(Color.red.darker().darker().darker());
+				} else {
+					frame.getContentPane().setBackground(Color.blue.darker().darker().darker());
+				}
 				FindingTimo.player.xCord--;
 				fT.update();
 			} else {
@@ -107,6 +130,12 @@ public class SetUpControls extends JFrame implements KeyListener{
 		//checks if user presses d
 		case 'd':
 			if(xPlayer<fT.mWidth-1) {
+				if(Math.abs(xPlayer-xTurtle)>Math.abs((xPlayer+1)-(xTurtle))){
+					//if within a certain range, print even hotter
+					frame.getContentPane().setBackground(Color.red.darker().darker());
+				} else {
+					frame.getContentPane().setBackground(Color.blue.darker().darker());
+				}
 				FindingTimo.player.xCord++;
 				fT.update();
 			} else {
@@ -120,7 +149,7 @@ public class SetUpControls extends JFrame implements KeyListener{
 		//checks if user presses up
 		case KeyEvent.VK_UP:
 			if(zPlayer<2) {
-				fT.map[fT.player.yCord][fT.player.xCord][fT.player.zCord] = fT.visionCones;
+				fT.map[yPlayer][xPlayer][zPlayer] = fT.visionCones;
 				FindingTimo.player.zCord++;
 				fT.update();
 			} else {
@@ -131,7 +160,7 @@ public class SetUpControls extends JFrame implements KeyListener{
 		//checks if user presses down
 		case KeyEvent.VK_DOWN:
 			if(zPlayer>0) {
-				fT.map[fT.player.yCord][fT.player.xCord][fT.player.zCord] = fT.visionCones;
+				fT.map[yPlayer][xPlayer][zPlayer] = fT.visionCones;
 				FindingTimo.player.zCord--;
 				fT.update();
 			} else {
@@ -141,6 +170,7 @@ public class SetUpControls extends JFrame implements KeyListener{
 		}
 		
 	}
+	
 	@Override
 	public void keyReleased(KeyEvent e) {
 		//empty. Must be implemeneted because of keylistener

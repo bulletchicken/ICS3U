@@ -6,6 +6,7 @@ public class FindingTimo {
 		int xCord;
 		int yCord;
 		int zCord;
+		int numOfMoves;
 		boolean found;
 	}
 
@@ -19,7 +20,7 @@ public class FindingTimo {
 
 	static Character timo = new Character();
 	static Character player = new Character();
-	static Character finish = new Character();
+	Character finish = new Character();
 
 	final char visionCones = '.';
 
@@ -30,7 +31,7 @@ public class FindingTimo {
 	int move = 0; //make a universal move counter to display number of moves and use to do turtle speed if(move%4==0) or smth
 
 	static char [][][] map = new char[mLength][mWidth][height];
-	static byte [][][] unseenMap = new byte[mLength][mWidth][height];
+	static byte [][][] ghostMap = new byte[mLength][mWidth][height];
  
 	public static void main(String[]args) {
 		new FindingTimo();
@@ -43,7 +44,7 @@ public class FindingTimo {
 
 	public Moves moveGenerator(Character movement, char poop) {
 		
-		final byte maxNumOfOptions = 5;
+		final byte maxNumOfOptions = 4;
 		Moves availableMoves = new Moves();
 		availableMoves.options = new byte[maxNumOfOptions];
 		
@@ -51,52 +52,39 @@ public class FindingTimo {
 		
 		//adds the directions into a raffel!
 		
-		/* 1 = forward
-		 * 2 = back
-		 * 3 = left
-		 * 4 = right
-		 */
-		
-		
 		byte indexOfOption = 0;
-		if(movement.yCord>0&&unseenMap[timo.yCord-1][timo.xCord][timo.zCord]==0) {
-			System.out.println("can move forward");
+		if(movement.yCord>0&&ghostMap[timo.yCord-1][timo.xCord][timo.zCord]==0) {
 			availableMoves.options[indexOfOption] = 1;
 			indexOfOption++;
 		}
-		if(movement.yCord<mLength-1&&unseenMap[timo.yCord+1][timo.xCord][timo.zCord]==0) {
-			System.out.println("can move backwards");
+		if(movement.yCord<mLength-1&&ghostMap[timo.yCord+1][timo.xCord][timo.zCord]==0) {
 			availableMoves.options[indexOfOption] = 2;
 			indexOfOption++;
 		}
-		if(movement.xCord>0&&unseenMap[timo.yCord][timo.xCord-1][timo.zCord]==0) {
-			System.out.println("can move left");
+		if(movement.xCord>0&&ghostMap[timo.yCord][timo.xCord-1][timo.zCord]==0) {
 			availableMoves.options[indexOfOption] = 3;
 			indexOfOption++;
 		}
-		if(movement.xCord<mWidth-1&&unseenMap[timo.yCord][timo.xCord+1][timo.zCord]==0) {
-			System.out.println("can move right");
+		if(movement.xCord<mWidth-1&&ghostMap[timo.yCord][timo.xCord+1][timo.zCord]==0) {
 			availableMoves.options[indexOfOption] = 4;
 			indexOfOption++;
-		}
-		
-		for(int i = 0; i < 5; i++) {
-			System.out.println(availableMoves.options[i]);
 		}
 		
 		availableMoves.numOfOptions = indexOfOption;
 		
 		availableMoves.randomDirection = (byte)(Math.random()*indexOfOption); //200 iq numOfOptions strat
-		System.out.println("dfsdf" + (byte)(Math.random()*indexOfOption));
 		return availableMoves;
 		
 	}
+	
+	
 	public void turtleMove(){
 		
 		byte direction;
 		final char poop = 'o';
 		
 		Moves turtleDirection = moveGenerator(timo, poop);
+		timo.numOfMoves++;
 		
 		if(turtleDirection.numOfOptions == 0) { //meaning all directions were skipped and none added to options list
 			direction = 0;
@@ -104,52 +92,57 @@ public class FindingTimo {
 		else {
 			direction = turtleDirection.options[turtleDirection.randomDirection];
 		}
-		System.out.println(direction);
+		if(map[timo.yCord][timo.xCord][timo.zCord]=='!') { //true even if on itself because it means it was visable previously
+			map[timo.yCord][timo.xCord][timo.zCord] = visionCones;
+		} else if (!canBeSeen(timo)){
+			map[timo.yCord][timo.xCord][timo.zCord] = ' ';
+		}
+		ghostMap[timo.yCord][timo.xCord][timo.zCord] = (byte)timo.numOfMoves;
+		
 		switch(direction) {
 		
 		case 0: //up down in case the turtle is trapped in its own poop
 			if(timo.zCord<height-1) { //zcords should be measured and compared invididually
-				unseenMap[timo.yCord][timo.xCord][timo.zCord] = (byte) move;
 				timo.zCord++;
 			} 
 			else if(timo.zCord>0) {
-				unseenMap[timo.yCord][timo.xCord][timo.zCord] = (byte) move;
 				timo.zCord--;
 			}
 			break;
 		case 1: //forward
-			unseenMap[timo.yCord][timo.xCord][timo.zCord] = (byte) move;
 			timo.yCord--;
 			break;
 		case 2: //backward
-			unseenMap[timo.yCord][timo.xCord][timo.zCord] = (byte) move;
 			timo.yCord++;
 			break;
 		case 3: //left
-			unseenMap[timo.yCord][timo.xCord][timo.zCord] = (byte) move;
 			timo.xCord--;
 			break;
 		case 4: //right
-			unseenMap[timo.yCord][timo.xCord][timo.zCord] = (byte) move;
 			timo.xCord++;
 			break;
 		}
 		
 	}
 	
-	public void poopPlacement(int playerYCord, int playerXCord, int playerZCord) {
-		char poop = 'o';
-		//if main map has vision cone on same place where other map has poop
+	public int distanceBetween(Character past){ //this method must be called after the changes like distanceBetween(smth.xCord-1) | can be called before
+		int oldDistance = Math.abs(timo.xCord-past.xCord) + Math.abs(timo.yCord-past.yCord);
+		int newDistance = Math.abs(timo.xCord-player.xCord) + Math.abs(timo.yCord-player.yCord);
+				
+				//instead of hot and cold, i will show them distance from turtle
 		
-		
-		//statement to check if vision has discovered poop or not
-		if(map[playerYCord][playerXCord][playerZCord]== visionCones && unseenMap[timo.yCord][timo.xCord][timo.zCord]!=0) {
-			map[timo.yCord][timo.xCord][timo.zCord]=poop;
-		} else {
-			map[playerYCord][playerXCord][playerZCord]=visionCones;
+		if(newDistance<oldDistance){
+			System.out.println("hotter"); //change to colour change
 		}
+		if(newDistance<3){
+			//extreme color
+		}
+		
+		System.out.println(newDistance); //save the print for after the method is called so i can return an int
+		return newDistance;
 	}
-	//have to compare unseenMap everytime vision is called.
+	
+	//have to compare ghostMap everytime vision is called.
 	public boolean canBeSeen(Character inQuestion) {
 		if(map[inQuestion.yCord][inQuestion.xCord][inQuestion.zCord]==visionCones) {
 			return true;
@@ -159,31 +152,32 @@ public class FindingTimo {
 
 	public void vision() {
 		try{
-			poopPlacement(player.yCord+1, player.xCord, player.zCord);
-			//corner piece
-			poopPlacement(player.yCord+1, player.xCord+1, player.zCord);
-			poopPlacement(player.yCord+1, player.xCord-1, player.zCord);
+			
+			map[player.yCord+1][player.xCord][player.zCord] = visionCones;
+			
+			map[player.yCord+1][player.xCord+1][player.zCord] = visionCones;
+			map[player.yCord+1][player.xCord-1][player.zCord] = visionCones;
 		}catch(Exception e){
 			
 		}
 		try{
-			poopPlacement(player.yCord-1, player.xCord, player.zCord);
+			map[player.yCord-1][player.xCord][player.zCord] = visionCones;
 			
-			//corner piece
-			poopPlacement(player.yCord-1, player.xCord+1, player.zCord);
-			poopPlacement(player.yCord-1, player.xCord-1, player.zCord);
+			map[player.yCord-1][player.xCord+1][player.zCord] = visionCones;
+			map[player.yCord-1][player.xCord-1][player.zCord] = visionCones;
+			
 		}catch(Exception e){
 			
 		}
 
 		try{
-			poopPlacement(player.yCord, player.xCord+1, player.zCord);
+			map[player.yCord][player.xCord+1][player.zCord] = visionCones;
 		}catch(Exception e){
 
 		}
 
 		try{
-			poopPlacement(player.yCord, player.xCord-1, player.zCord);
+			map[player.yCord][player.xCord-1][player.zCord] = visionCones;
 		}catch(Exception e){
 
 		}
@@ -209,21 +203,28 @@ public class FindingTimo {
 
 	public void update() {
 		String[]alphabet = "abcdefghijklmnopqrstuvwxyz".split("");
+		byte random = (byte)(Math.random()*3); //can move 0-2 squares every three moves
 		for(int i = 0; i < 20; i++) System.out.println(); //to clear screen
-		vision();
+		
+		
 		move++;
+		vision();
 		if(!timo.found){
 			if(move%3==0){
-				turtleMove();
+				for(int i = 0; i < random; i++){
+					turtleMove();	
+				}
+				
 			}
-			if(canBeSeen(timo)){
-				map[timo.yCord][timo.xCord][timo.zCord] = '!';
+			if(canBeSeen(timo)) { //not within the other if to be ontop of vision updates
+				map[timo.yCord][timo.xCord][timo.zCord]='!';
 			}
+
 		}
-		System.out.println(alphabet[timo.yCord] +" "+ timo.xCord +" "+ (timo.zCord+1));
-		System.out.println(move);
+		
+		System.out.println("timo location : " + alphabet[timo.xCord] +" "+ (timo.yCord+1) +" "+ (timo.zCord+1));
 		map[player.yCord][player.xCord][player.zCord] = 'x';
-		if(player.found||onTurtle()) {
+		if(timo.found||onTurtle()) {
 			System.out.println("Return the turtle to coordinates (" + alphabet[finish.xCord] + ", " + (finish.yCord+1) + ", " + (finish.zCord+1) + ")");
 			if(bedroom()){
 				endingScreen();
@@ -295,5 +296,3 @@ public class FindingTimo {
 		return br.readLine();
 	}
 }
-
-
