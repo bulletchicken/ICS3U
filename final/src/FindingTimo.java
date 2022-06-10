@@ -10,12 +10,6 @@ public class FindingTimo {
 		boolean found;
 	}
 
-	static class Moves{
-		byte[]options;
-		byte randomDirection;
-		byte numOfOptions;
-	}
-
 	static Character timo = new Character();
 	static Character player = new Character();
 	Character finish = new Character();
@@ -33,64 +27,96 @@ public class FindingTimo {
 
 	int previousDistance = distanceBetween();
 
-	public static void main(String[]args) {
-		new FindingTimo();
-
-		FindingTimo fT = new FindingTimo();
-
-		fT.run();
-
-	}
-
-	public Moves moveGenerator(Character movement, char poop) {
-
-		final byte maxNumOfOptions = 4;
-		Moves availableMoves = new Moves();
-		availableMoves.options = new byte[maxNumOfOptions];
+	public byte[] moveGenerator(Character movement, char poop) {
+		
+		
+		System.out.println("find error");
+		//error lies within move generator
+		
+		final byte maxNumOfOptions = 5; //4 slots for moves, 1 slot at end for number of available moves
+		byte []options = new byte[maxNumOfOptions];
 
 		//checks which sides are open. adds them into a draw. //if nothing in draw, goes up and down
 
 		//adds the directions into a raffel!
 
-		byte indexOfOption = 0;
-		if(movement.yCord>0&&ghostMap[timo.yCord-1][timo.xCord][timo.zCord]==0) {
-			availableMoves.options[indexOfOption] = 1;
-			indexOfOption++;
+		byte numOfOption = 0;
+		
+		//edge error happening after changing ghostmap[timo] to ghostmap[movement]
+		//update : that is not the case...
+		//solution: the movement only blocks 1 pace movement, not the 0-3 jumps I added. wait but if I call the check each jump it should work...
+		for(int i = 0; i < numOfOption; i++) {
+			System.out.print(options[i]);
 		}
-		if(movement.yCord<mLength-1&&ghostMap[timo.yCord+1][timo.xCord][timo.zCord]==0) {
-			availableMoves.options[indexOfOption] = 2;
-			indexOfOption++;
+		System.out.println();
+		if(movement.yCord>0&&ghostMap[movement.yCord-1][movement.xCord][movement.zCord]==0) {
+			System.out.println("can move forward");
+			options[numOfOption] = 1;
+			numOfOption++;
 		}
-		if(movement.xCord>0&&ghostMap[timo.yCord][timo.xCord-1][timo.zCord]==0) {
-			availableMoves.options[indexOfOption] = 3;
-			indexOfOption++;
+		for(int i = 0; i < numOfOption; i++) {
+			System.out.print(options[i]);
 		}
-		if(movement.xCord<mWidth-1&&ghostMap[timo.yCord][timo.xCord+1][timo.zCord]==0) {
-			availableMoves.options[indexOfOption] = 4;
-			indexOfOption++;
+		System.out.println();
+		if(movement.yCord<mLength-1&&ghostMap[movement.yCord+1][movement.xCord][movement.zCord]==0) {
+			System.out.println("Can move backwards");
+			options[numOfOption] = 2;
+			numOfOption++;
 		}
+		for(int i = 0; i < numOfOption; i++) {
+			System.out.print(options[i]);
+		}
+		System.out.println();
+		if(movement.xCord>0&&ghostMap[movement.yCord][movement.xCord-1][movement.zCord]==0) {
+			System.out.println("Can move left");
+			options[numOfOption] = 3;
+			numOfOption++;
+		}
+		for(int i = 0; i < numOfOption; i++) {
+			System.out.print(options[i]);
+		}
+		System.out.println();
+		if(movement.xCord<mWidth-1&&ghostMap[movement.yCord][movement.xCord+1][movement.zCord]==0) {
+			System.out.println("Can move right");
+			options[numOfOption] = 4;
+			numOfOption++;
+		}
+		
+		for(int i = 0; i < numOfOption; i++) {
+			System.out.print(options[i]);
+		}
+		System.out.println();
+		
 
-		availableMoves.numOfOptions = indexOfOption;
+		options[4] = numOfOption;
 
-		availableMoves.randomDirection = (byte)(Math.random()*indexOfOption); //200 iq numOfOptions strat
-		return availableMoves;
+		return options;
 
 	}
 
 
 	public void turtleMove(char visionCones){
-
-		byte direction;
+		
+		
 		final char poop = 'o';
+		
+		byte direction;
 
-		Moves turtleDirection = moveGenerator(timo, poop);
+		byte [] turtleDirection = moveGenerator(timo, poop); 
+		
+		//direction 0 = up or down
+		//direction 1 = forward
+		//direction 2 = backwards
+		//direction 3 = left
+		//direction 4 = right
+		
 		timo.numOfMoves++;
 
-		if(turtleDirection.numOfOptions == 0) { //meaning all directions were skipped and none added to options list
+		if(turtleDirection[4] == 0) { //meaning all directions were skipped and none added to options list
 			direction = 0;
 		}
 		else {
-			direction = turtleDirection.options[turtleDirection.randomDirection];
+			direction = turtleDirection[(byte)(Math.random()*turtleDirection[4])];
 		}
 		if(map[timo.yCord][timo.xCord][timo.zCord]=='!') { //true even if on itself because it means it was visable previously
 			map[timo.yCord][timo.xCord][timo.zCord] = visionCones;
@@ -99,6 +125,8 @@ public class FindingTimo {
 		}
 		ghostMap[timo.yCord][timo.xCord][timo.zCord] = (byte)timo.numOfMoves;
 
+		//System.out.println("Error checker : " + timo.yCord +" " +timo.xCord + " "+ timo.zCord);
+		System.out.println("the direction the turtle will go in is " + direction);
 		switch(direction) {
 
 		case 0: //up down in case the turtle is trapped in its own poop
@@ -136,6 +164,9 @@ public class FindingTimo {
 	}
 
 	public void vision(char visionCones) {
+		
+		//update the try catch to remove unncessary catch
+		
 		try{
 
 			map[player.yCord+1][player.xCord][player.zCord] = visionCones;
@@ -190,12 +221,17 @@ public class FindingTimo {
 	}
 	
 	public void turtleMoveTracker(char visionCones) {
+		
+// issue is here
 		byte random = (byte)(Math.random()*3); //can move 0-2 squares every three moves
 		if(move%2==0){
 			for(int i = 0; i < random; i++){
 				turtleMove(visionCones);	
 			}
 		}
+		
+		//error ends here (it is inside turtleMove)
+		System.out.println("error in movetracker : " + timo.yCord);
 		
 		int currentDistance = distanceBetween();
 		if(timo.zCord<player.zCord) {
@@ -211,6 +247,10 @@ public class FindingTimo {
 		
 		previousDistance = currentDistance;
 		
+		//issue lies when I changed something here
+		
+		
+		
 		if(canBeSeen(timo, visionCones)) { //not within the other if to be ontop of vision updates
 			map[timo.yCord][timo.xCord][timo.zCord]='!';
 		}
@@ -219,7 +259,7 @@ public class FindingTimo {
 	public void displayGrid(int floor, String[]alphabet) {
 
 		System.out.println("(" + alphabet[player.xCord] + ", "+(player.yCord+1) + ", " + (player.zCord+1) + ")");
-
+		
 		for(int i = 0; i < map[0].length; i++) {
 			System.out.print(alphabet[i] + " ");
 		}
@@ -237,7 +277,6 @@ public class FindingTimo {
 		String[]alphabet = "abcdefghijklmnopqrstuvwxyz".split("");
 		final char visionCones = '.';
 		Menu m = new Menu();
-
 		
 		for(int i = 0; i < 20; i++) System.out.println(); //to clear screen
 
@@ -251,6 +290,9 @@ public class FindingTimo {
 			}
 			System.out.println("Return the turtle to coordinates (" + alphabet[finish.xCord] + ", " + (finish.yCord+1) + ", " + (finish.zCord+1) + ")");
 		} else {
+			
+			//smth wrong here?
+			
 			turtleMoveTracker(visionCones);
 			System.out.println("timo's current location (he's still on the run!) : " + alphabet[timo.xCord] +" "+ (timo.yCord+1) +" "+ (timo.zCord+1)); //save this for the hint
 		}
@@ -286,9 +328,17 @@ public class FindingTimo {
 	public void run() {
 		SetUpControls.setControls();
 		//starting cords
+		
+		/*
 		timo.xCord = (int)(Math.random()*mWidth);
 		timo.yCord = (int)(Math.random()*mLength);
 		timo.zCord = (int)(Math.random()*height);
+		
+		*/
+		
+		timo.xCord = 4;
+		timo.yCord = 0;
+		timo.zCord = 0;
 		//starting cords in the middle
 		player.xCord = mWidth/2;
 		player.yCord = mLength/2;
