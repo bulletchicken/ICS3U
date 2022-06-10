@@ -1,5 +1,4 @@
 import java.awt.Color;
-import java.io.*;
 
 public class FindingTimo {
 
@@ -17,13 +16,11 @@ public class FindingTimo {
 		byte numOfOptions;
 	}
 
-	BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-
 	static Character timo = new Character();
 	static Character player = new Character();
 	Character finish = new Character();
 
-	final char visionCones = '.';
+	
 
 	final static int mLength = 15; //vertical
 	final static int mWidth = 15; //horizontal
@@ -81,7 +78,7 @@ public class FindingTimo {
 	}
 
 
-	public void turtleMove(){
+	public void turtleMove(char visionCones){
 
 		byte direction;
 		final char poop = 'o';
@@ -97,7 +94,7 @@ public class FindingTimo {
 		}
 		if(map[timo.yCord][timo.xCord][timo.zCord]=='!') { //true even if on itself because it means it was visable previously
 			map[timo.yCord][timo.xCord][timo.zCord] = visionCones;
-		} else if (!canBeSeen(timo)){
+		} else if (!canBeSeen(timo, visionCones)){
 			map[timo.yCord][timo.xCord][timo.zCord] = ' ';
 		}
 		ghostMap[timo.yCord][timo.xCord][timo.zCord] = (byte)timo.numOfMoves;
@@ -131,14 +128,14 @@ public class FindingTimo {
 
 
 	//have to compare ghostMap everytime vision is called.
-	public boolean canBeSeen(Character inQuestion) {
+	public boolean canBeSeen(Character inQuestion, char visionCones) {
 		if(map[inQuestion.yCord][inQuestion.xCord][inQuestion.zCord]==visionCones) {
 			return true;
 		}
 		return false;
 	}
 
-	public void vision() {
+	public void vision(char visionCones) {
 		try{
 
 			map[player.yCord+1][player.xCord][player.zCord] = visionCones;
@@ -180,20 +177,24 @@ public class FindingTimo {
 	}
 
 	public void isHot(int previousDistance, int currentDistance) {
-		if(currentDistance<previousDistance) {
-			SetUpControls.frame.getContentPane().setBackground(Color.red.darker().darker().darker());
+		if(currentDistance<=previousDistance) {
+			if(currentDistance<5) { //if within 5 moves, very hot
+				SetUpControls.frame.getContentPane().setBackground(Color.red);
+			} else {
+				SetUpControls.frame.getContentPane().setBackground(Color.red.darker().darker().darker());
+			}
+			
 		} else {
 			SetUpControls.frame.getContentPane().setBackground(Color.blue.darker().darker().darker());
 		}
 	}
 	
-	public void turtleMoveTracker() {
+	public void turtleMoveTracker(char visionCones) {
 		byte random = (byte)(Math.random()*3); //can move 0-2 squares every three moves
-		if(move%3==0){
+		if(move%2==0){
 			for(int i = 0; i < random; i++){
-				turtleMove();	
+				turtleMove(visionCones);	
 			}
-
 		}
 		
 		int currentDistance = distanceBetween();
@@ -205,9 +206,12 @@ public class FindingTimo {
 		} else {
 			System.out.println("Timo is "+currentDistance+" steps away");
 		}
+		
+		isHot(previousDistance, currentDistance); //changes the color of controls
+		
 		previousDistance = currentDistance;
 		
-		if(canBeSeen(timo)) { //not within the other if to be ontop of vision updates
+		if(canBeSeen(timo, visionCones)) { //not within the other if to be ontop of vision updates
 			map[timo.yCord][timo.xCord][timo.zCord]='!';
 		}
 	}
@@ -231,36 +235,32 @@ public class FindingTimo {
 
 	public void update() { 
 		String[]alphabet = "abcdefghijklmnopqrstuvwxyz".split("");
+		final char visionCones = '.';
+		Menu m = new Menu();
 
 		
 		for(int i = 0; i < 20; i++) System.out.println(); //to clear screen
 
 		move++;
-		vision();
+		vision(visionCones);
 
-
-		if(!timo.found){
-			turtleMoveTracker();
-		}
-
-		//place the color change here
-
-		System.out.println("timo location : " + alphabet[timo.xCord] +" "+ (timo.yCord+1) +" "+ (timo.zCord+1));
-		map[player.yCord][player.xCord][player.zCord] = 'x';
 		if(timo.found||onTurtle()) {
-			System.out.println("Return the turtle to coordinates (" + alphabet[finish.xCord] + ", " + (finish.yCord+1) + ", " + (finish.zCord+1) + ")");
-			if(bedroom()){
-				endingScreen();
+			if(atBedroom()){
+				m.endingScreen();
 				return; //breaks the method
 			}
+			System.out.println("Return the turtle to coordinates (" + alphabet[finish.xCord] + ", " + (finish.yCord+1) + ", " + (finish.zCord+1) + ")");
+		} else {
+			turtleMoveTracker(visionCones);
+			System.out.println("timo's current location (he's still on the run!) : " + alphabet[timo.xCord] +" "+ (timo.yCord+1) +" "+ (timo.zCord+1)); //save this for the hint
 		}
 
-
+		map[player.yCord][player.xCord][player.zCord] = 'x';
 
 		displayGrid(player.zCord, alphabet);
 	}
 
-	public boolean bedroom() {
+	public boolean atBedroom() {
 
 		//make a random point the player has to reach on another floor
 		if(player.yCord == finish.yCord && player.xCord == finish.xCord && player.zCord == finish.zCord){
@@ -274,8 +274,8 @@ public class FindingTimo {
 			timo.found = true;
 			System.out.println("Caputred the turtle!");
 
-			finish.xCord = (int)(Math.random()*15);
-			finish.yCord = (int)(Math.random()*15);
+			finish.xCord = (int)(Math.random()*mWidth);
+			finish.yCord = (int)(Math.random()*mLength);
 			finish.zCord = (int)(Math.random()*height);
 
 			return true;
@@ -286,12 +286,12 @@ public class FindingTimo {
 	public void run() {
 		SetUpControls.setControls();
 		//starting cords
-		timo.xCord = (int)(Math.random()*15);
-		timo.yCord = (int)(Math.random()*15);
+		timo.xCord = (int)(Math.random()*mWidth);
+		timo.yCord = (int)(Math.random()*mLength);
 		timo.zCord = (int)(Math.random()*height);
 		//starting cords in the middle
-		player.xCord = 7;
-		player.yCord = 7;
+		player.xCord = mWidth/2;
+		player.yCord = mLength/2;
 		player.zCord = 0;
 
 		//setup the map and resets it on every run
@@ -302,19 +302,8 @@ public class FindingTimo {
 				}
 			}
 		}
-		//use cues like you hear footsteps above or below you
 		update();
 	}
-	public void endingScreen() {
-		SetUpControls.closeWindow();
-		System.out.println("You win");
-	}
 
-	public void displayIntro() {
-		System.out.println("Game : type 1 to begin");
-	}
 
-	public String nameInput()throws IOException {
-		return br.readLine();
-	}
 }

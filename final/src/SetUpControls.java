@@ -11,7 +11,7 @@ public class SetUpControls extends JFrame implements KeyListener{
 	//making jframe a global so I can access it from another method and ultimately another class
 	
 	public static void setControls(){
-		
+		Menu m = new Menu();
 		//set the frame
 		
 		frame.setBounds(300, 300, 600, 300);
@@ -52,7 +52,7 @@ public class SetUpControls extends JFrame implements KeyListener{
 		winButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				fT.endingScreen();
+				m.endingScreen();
 			}
 		});
 		
@@ -84,12 +84,6 @@ public class SetUpControls extends JFrame implements KeyListener{
 		//if user presses w
 		case 'w':
 			if(yPlayer>0) {
-				if(Math.abs(yPlayer-yTurtle)>Math.abs((yPlayer-1)-(yTurtle))){
-					//if within a certain range, print even hotter
-					frame.getContentPane().setBackground(Color.red.darker().darker().darker());
-				} else {
-					frame.getContentPane().setBackground(Color.blue.darker().darker().darker());
-				}
 				FindingTimo.player.yCord--;
 				fT.update();
 			} else {
@@ -100,12 +94,6 @@ public class SetUpControls extends JFrame implements KeyListener{
 		//if user presses s
 		case 's':
 			if(yPlayer<FindingTimo.mLength-1) {
-				if(Math.abs(yPlayer-yTurtle)>Math.abs((yPlayer+1)-(yTurtle))){
-					//if within a certain range, print even hotter
-					frame.getContentPane().setBackground(Color.red.darker().darker().darker());
-				} else {
-					frame.getContentPane().setBackground(Color.blue.darker().darker().darker());
-				}
 				FindingTimo.player.yCord++;
 				fT.update();
 			} else {
@@ -116,12 +104,6 @@ public class SetUpControls extends JFrame implements KeyListener{
 		//checks if user presses a
 		case 'a':
 			if(xPlayer>0) {
-				if(Math.abs(xPlayer-xTurtle)>Math.abs((xPlayer-1)-(xTurtle))){
-					//if within a certain range, print even hotter
-					frame.getContentPane().setBackground(Color.red.darker().darker().darker());
-				} else {
-					frame.getContentPane().setBackground(Color.blue.darker().darker().darker());
-				}
 				FindingTimo.player.xCord--;
 				fT.update();
 			} else {
@@ -132,12 +114,6 @@ public class SetUpControls extends JFrame implements KeyListener{
 		//checks if user presses d
 		case 'd':
 			if(xPlayer<fT.mWidth-1) {
-				if(Math.abs(xPlayer-xTurtle)>Math.abs((xPlayer+1)-(xTurtle))){
-					//if within a certain range, print even hotter
-					frame.getContentPane().setBackground(Color.red.darker().darker().darker());
-				} else {
-					frame.getContentPane().setBackground(Color.blue.darker().darker().darker());
-				}
 				FindingTimo.player.xCord++;
 				fT.update();
 			} else {
@@ -151,7 +127,7 @@ public class SetUpControls extends JFrame implements KeyListener{
 		//checks if user presses up
 		case KeyEvent.VK_UP:
 			if(zPlayer<2) {
-				fT.map[yPlayer][xPlayer][zPlayer] = fT.visionCones;
+				fT.map[yPlayer][xPlayer][zPlayer] = '.';
 				FindingTimo.player.zCord++;
 				fT.update();
 			} else {
@@ -162,7 +138,7 @@ public class SetUpControls extends JFrame implements KeyListener{
 		//checks if user presses down
 		case KeyEvent.VK_DOWN:
 			if(zPlayer>0) {
-				fT.map[yPlayer][xPlayer][zPlayer] = fT.visionCones;
+				fT.map[yPlayer][xPlayer][zPlayer] = '.';
 				FindingTimo.player.zCord--;
 				fT.update();
 			} else {
