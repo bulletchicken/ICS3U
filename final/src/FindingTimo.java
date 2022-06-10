@@ -24,14 +24,13 @@ public class FindingTimo {
 
 	static char [][][] map = new char[mLength][mWidth][height];
 	static byte [][][] ghostMap = new byte[mLength][mWidth][height];
+	//ghostmap is used to track the path (including order) of the turtle
 
 	int previousDistance = distanceBetween();
 
 	public byte[] moveGenerator(Character movement, char poop) {
 		
 		
-		System.out.println("find error");
-		//error lies within move generator
 		
 		final byte maxNumOfOptions = 5; //4 slots for moves, 1 slot at end for number of available moves
 		byte []options = new byte[maxNumOfOptions];
@@ -45,49 +44,27 @@ public class FindingTimo {
 		//edge error happening after changing ghostmap[timo] to ghostmap[movement]
 		//update : that is not the case...
 		//solution: the movement only blocks 1 pace movement, not the 0-3 jumps I added. wait but if I call the check each jump it should work...
-		for(int i = 0; i < numOfOption; i++) {
-			System.out.print(options[i]);
-		}
-		System.out.println();
+
 		if(movement.yCord>0&&ghostMap[movement.yCord-1][movement.xCord][movement.zCord]==0) {
-			System.out.println("can move forward");
 			options[numOfOption] = 1;
 			numOfOption++;
 		}
-		for(int i = 0; i < numOfOption; i++) {
-			System.out.print(options[i]);
-		}
-		System.out.println();
+
 		if(movement.yCord<mLength-1&&ghostMap[movement.yCord+1][movement.xCord][movement.zCord]==0) {
-			System.out.println("Can move backwards");
 			options[numOfOption] = 2;
 			numOfOption++;
 		}
-		for(int i = 0; i < numOfOption; i++) {
-			System.out.print(options[i]);
-		}
-		System.out.println();
+
 		if(movement.xCord>0&&ghostMap[movement.yCord][movement.xCord-1][movement.zCord]==0) {
-			System.out.println("Can move left");
 			options[numOfOption] = 3;
 			numOfOption++;
 		}
-		for(int i = 0; i < numOfOption; i++) {
-			System.out.print(options[i]);
-		}
-		System.out.println();
+
 		if(movement.xCord<mWidth-1&&ghostMap[movement.yCord][movement.xCord+1][movement.zCord]==0) {
-			System.out.println("Can move right");
 			options[numOfOption] = 4;
 			numOfOption++;
 		}
 		
-		for(int i = 0; i < numOfOption; i++) {
-			System.out.print(options[i]);
-		}
-		System.out.println();
-		
-
 		options[4] = numOfOption;
 
 		return options;
@@ -152,10 +129,6 @@ public class FindingTimo {
 		}
 
 	}
-
-
-
-	//have to compare ghostMap everytime vision is called.
 	public boolean canBeSeen(Character inQuestion, char visionCones) {
 		if(map[inQuestion.yCord][inQuestion.xCord][inQuestion.zCord]==visionCones) {
 			return true;
@@ -222,16 +195,12 @@ public class FindingTimo {
 	
 	public void turtleMoveTracker(char visionCones) {
 		
-// issue is here
 		byte random = (byte)(Math.random()*3); //can move 0-2 squares every three moves
 		if(move%2==0){
 			for(int i = 0; i < random; i++){
 				turtleMove(visionCones);	
 			}
 		}
-		
-		//error ends here (it is inside turtleMove)
-		System.out.println("error in movetracker : " + timo.yCord);
 		
 		int currentDistance = distanceBetween();
 		if(timo.zCord<player.zCord) {
