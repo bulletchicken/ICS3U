@@ -79,6 +79,8 @@ public class SetUpControls extends JFrame implements KeyListener{
 		
 		switch(move) {
 		
+		//create two methods for the two cases | hotter, colder | and fit in two conditions
+		
 		//if user presses w
 		case 'w':
 			if(yPlayer>0) {
@@ -132,9 +134,9 @@ public class SetUpControls extends JFrame implements KeyListener{
 			if(xPlayer<fT.mWidth-1) {
 				if(Math.abs(xPlayer-xTurtle)>Math.abs((xPlayer+1)-(xTurtle))){
 					//if within a certain range, print even hotter
-					frame.getContentPane().setBackground(Color.red.darker().darker());
+					frame.getContentPane().setBackground(Color.red.darker().darker().darker());
 				} else {
-					frame.getContentPane().setBackground(Color.blue.darker().darker());
+					frame.getContentPane().setBackground(Color.blue.darker().darker().darker());
 				}
 				FindingTimo.player.xCord++;
 				fT.update();

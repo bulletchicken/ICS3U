@@ -1,3 +1,4 @@
+import java.awt.Color;
 import java.io.*;
 
 public class FindingTimo {
@@ -125,21 +126,10 @@ public class FindingTimo {
 		
 	}
 	
-	public int distanceBetween(Character past){ //this method must be called after the changes like distanceBetween(smth.xCord-1) | can be called before
-		int oldDistance = Math.abs(timo.xCord-past.xCord) + Math.abs(timo.yCord-past.yCord);
-		int newDistance = Math.abs(timo.xCord-player.xCord) + Math.abs(timo.yCord-player.yCord);
-				
-				//instead of hot and cold, i will show them distance from turtle
-		
-		if(newDistance<oldDistance){
-			System.out.println("hotter"); //change to colour change
-		}
-		if(newDistance<3){
-			//extreme color
-		}
-		
-		System.out.println(newDistance); //save the print for after the method is called so i can return an int
-		return newDistance;
+	public int distanceBetween(){ //this method must be called after the changes like distanceBetween(smth.xCord-1) | can be called before
+		int distance = Math.abs(timo.xCord-player.xCord) + Math.abs(timo.yCord-player.yCord);
+ //save the print for after the method is called so i can return an int
+		return distance;
 	}
 	
 	//have to compare ghostMap everytime vision is called.
@@ -165,7 +155,7 @@ public class FindingTimo {
 			
 			map[player.yCord-1][player.xCord+1][player.zCord] = visionCones;
 			map[player.yCord-1][player.xCord-1][player.zCord] = visionCones;
-			
+			 
 		}catch(Exception e){
 			
 		}
@@ -181,6 +171,25 @@ public class FindingTimo {
 		}catch(Exception e){
 
 		}
+		
+	}
+	public void isHot() {
+		if(!timo.found) {
+			if(Math.abs(player.yCord-timo.yCord)>Math.abs((player.yCord-1)-(timo.yCord))){
+				//if within a certain range, print even hotter
+				SetUpControls.frame.getContentPane().setBackground(Color.red.darker().darker().darker());
+			} else {
+				SetUpControls.frame.getContentPane().setBackground(Color.blue.darker().darker().darker());
+			}
+			else {
+				
+				//cold blue
+			}
+		}
+		//should i just compare the distance... only one comparison compared to the four for each direction
+
+	}
+	public void isCold() {
 		
 	}
 
@@ -201,11 +210,12 @@ public class FindingTimo {
 		}
 	}
 
-	public void update() {
+	public void update() { 
 		String[]alphabet = "abcdefghijklmnopqrstuvwxyz".split("");
 		byte random = (byte)(Math.random()*3); //can move 0-2 squares every three moves
 		for(int i = 0; i < 20; i++) System.out.println(); //to clear screen
 		
+		System.out.println("Timo is "+distanceBetween()+" steps away");
 		
 		move++;
 		vision();
@@ -219,8 +229,10 @@ public class FindingTimo {
 			if(canBeSeen(timo)) { //not within the other if to be ontop of vision updates
 				map[timo.yCord][timo.xCord][timo.zCord]='!';
 			}
-
 		}
+		
+		//place the color change here using distance 
+		
 		
 		System.out.println("timo location : " + alphabet[timo.xCord] +" "+ (timo.yCord+1) +" "+ (timo.zCord+1));
 		map[player.yCord][player.xCord][player.zCord] = 'x';
@@ -279,7 +291,6 @@ public class FindingTimo {
 				}
 			}
 		}
-
 		//use cues like you hear footsteps above or below you
 		update();
 	}
