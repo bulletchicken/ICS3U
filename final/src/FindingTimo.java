@@ -9,6 +9,8 @@ public class FindingTimo {
 		int numOfMoves;
 		boolean found;
 	}
+	
+	//update
 
 	static Character timo = new Character();
 	static Character player = new Character();
