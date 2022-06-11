@@ -5,8 +5,11 @@ public class Menu {
 	
 	public static void main(String[]args) {
 		FindingTimo fT = new FindingTimo();
+		Menu m = new Menu();
+		m.displayIntro();
 		fT.run();
 	}
+	
 	public void endingScreen() {
 		SetUpControls.closeWindow();
 		System.out.println("You win");

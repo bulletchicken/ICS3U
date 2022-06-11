@@ -71,10 +71,6 @@ public class SetUpControls extends JFrame implements KeyListener{
 		int xPlayer = FindingTimo.player.xCord;
 		int zPlayer = FindingTimo.player.zCord;
 		
-		int yTurtle = FindingTimo.timo.yCord;
-		int xTurtle = FindingTimo.timo.xCord;
-		int zTurtle = FindingTimo.timo.zCord;
-		
 		char move = e.getKeyChar();
 		
 		switch(move) {
