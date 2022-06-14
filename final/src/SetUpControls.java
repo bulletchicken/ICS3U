@@ -12,6 +12,7 @@ public class SetUpControls extends JFrame implements KeyListener{
 	
 	public static void setControls(){
 		Menu m = new Menu();
+		String[]alphabet = "abcdefghijklmnopqrstuvwxyz".split(""); //to display coordinates
 		//set the frame
 		
 		frame.setBounds(300, 300, 600, 300);
@@ -40,7 +41,13 @@ public class SetUpControls extends JFrame implements KeyListener{
 		hintButton.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent arg0){
-				System.out.println("Hint!");
+				if(!FindingTimo.timo.found){
+					System.out.println("timo's current location (he's still on the run!) : " + alphabet[FindingTimo.timo.xCord] +" "+ (FindingTimo.timo.yCord+1) +" "+ (FindingTimo.timo.zCord+1)); //save this for the hint
+					FindingTimo.player.numOfMoves +=5;
+				}
+				else{
+					System.out.println("timo has already been found!");
+				}
 			}
 		});
 		
@@ -52,7 +59,7 @@ public class SetUpControls extends JFrame implements KeyListener{
 		winButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				m.endingScreen();
+				m.endingScreen(fT.player.numOfMoves);
 			}
 		});
 		
@@ -161,5 +168,3 @@ public class SetUpControls extends JFrame implements KeyListener{
 	}
 	
 }
-
-
