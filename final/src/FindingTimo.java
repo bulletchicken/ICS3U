@@ -36,6 +36,7 @@ public class FindingTimo {
 
 		if(timo.found||onTurtle()) {
 			if(atBedroom()){
+				System.out.println("You win!");
 				m.endingScreen(player.numOfMoves);
 				return; //breaks the method
 			}

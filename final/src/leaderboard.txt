@@ -1,6 +1,6 @@
 bob 28
 ross 67
-foobar 2
+foobar 1
 theLegend 17
 Jeremy 29
 jasdf 45
@@ -11,6 +11,3 @@ TimosMom 4
 TimosSister 23
 TimosBrother 89
 Gitimo 32
-jere 1
-ere 1
-jeremy 1

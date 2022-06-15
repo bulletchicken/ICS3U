@@ -58,39 +58,39 @@ public class Menu {
 	public playerScore[] extractLeaderBoard() throws FileNotFoundException{
 	
 		File board = new File("src/leaderboard.txt");
-		Scanner fileReader = new Scanner(board);
+		Scanner count = new Scanner(board);
 		
 		//go back to the previous state where i count the lines then i go add into an array
 		
 		
 		int numOfSubmissions = 0;
-		while(fileReader.hasNext()) {
-			fileReader.next();
-			numOfSubmissions++;
-		}
-		fileReader.close();
 		
+		try {
+			while(count.hasNext()) {
+				count.nextLine();
+				numOfSubmissions++;
+			}
+			count.close();
+		}catch(Exception e) {
+			e.getStackTrace();
+		}
 		//reset
-		System.out.println(numOfSubmissions);
-		fileReader = new Scanner(board);
-		
 		playerScore [] extracted = new playerScore[numOfSubmissions];
-
-		for(int i = 0; i < numOfSubmissions; i++){
-			System.out.println(i);
-			extracted[i] = new playerScore();
+		try {
+			Scanner fileReader = new Scanner(board);
 			
-			String nameFromFile = fileReader.next();
-			int scoreFromFile = Integer.parseInt(fileReader.next());
-			
-			extracted[i].name = nameFromFile;
-			extracted[i].score = scoreFromFile;
+			while(numOfSubmissions-->0&&fileReader.hasNext()) {
+				
+				extracted[numOfSubmissions] = new playerScore();
+				extracted[numOfSubmissions].name = fileReader.next();
+				extracted[numOfSubmissions].score = fileReader.nextInt();
+			}
+			fileReader.close();
+		}catch(Exception e) {
+			e.getStackTrace();
 		}
-		
 
-		fileReader.close();
-		extracted = insertionSort(extracted, numOfSubmissions);
-		return extracted;
+		return insertionSort(extracted, extracted.length);
 		
 		//here remove the last value from the list
 	}
@@ -131,7 +131,6 @@ public class Menu {
 	
 	public void endingScreen(int score) {
 		SetUpControls.closeWindow();
-		System.out.println("You win!");
 		addScore(score);
 		displayBoard();
 	}

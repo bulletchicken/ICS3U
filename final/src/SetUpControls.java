@@ -21,6 +21,7 @@ public class SetUpControls extends JFrame implements KeyListener{
 		frame.isAlwaysOnTop();
 		frame.setDefaultCloseOperation(EXIT_ON_CLOSE);
 		frame.getContentPane().setBackground(Color.blue.darker().darker().darker());
+		
 		//give up button
 		JButton giveUp = new JButton("Give up");
 		frame.add(giveUp);
@@ -29,7 +30,7 @@ public class SetUpControls extends JFrame implements KeyListener{
 		giveUp.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				System.out.println("You lose!");	
+				System.out.println("You lose :( ");
 			}
 		});
 		
