@@ -7,20 +7,23 @@ import java.awt.event.KeyListener;
 public class SetUpControls extends JFrame implements KeyListener{
 
 	static FindingTimo fT = new FindingTimo();
-	static JFrame frame = new JFrame("Controls Window (Keep this tab on top to use controls)");
+	static JFrame frame;
 	//making jframe a global so I can access it from another method and ultimately another class
 	
 	public static void setControls(){
+		frame = new JFrame("Controls Window (Keep this tab on top to use controls)");
 		Menu m = new Menu();
 		String[]alphabet = "abcdefghijklmnopqrstuvwxyz".split(""); //to display coordinates
 		//set the frame
 		
-		frame.setBounds(300, 300, 600, 300);
+		frame.setBounds(1000, 500, 600, 300);
 		frame.setVisible(true);
 		frame.getContentPane().setLayout(null);
-		frame.isAlwaysOnTop();
+		frame.setAlwaysOnTop(true);
+		frame.requestFocus();
 		frame.setDefaultCloseOperation(EXIT_ON_CLOSE);
 		frame.getContentPane().setBackground(Color.blue.darker().darker().darker());
+		
 		//give up button
 		JButton giveUp = new JButton("Give up");
 		frame.add(giveUp);
@@ -29,7 +32,7 @@ public class SetUpControls extends JFrame implements KeyListener{
 		giveUp.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				System.out.println("You lose!");	
+				System.out.println("You lose :( ");
 			}
 		});
 		
@@ -60,6 +63,32 @@ public class SetUpControls extends JFrame implements KeyListener{
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				m.endingScreen(fT.player.numOfMoves);
+			}
+		});
+		
+		//rules button
+		JButton rulesButton = new JButton("rules");
+		frame.add(rulesButton);
+		rulesButton.setBounds(250, 200, 50, 50);
+		rulesButton.setFocusable(false);
+		rulesButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				Menu menu = new Menu();
+				menu.rules();
+			}
+		});
+		
+		//controls button
+		JButton controlsButton = new JButton("controls");
+		frame.add(controlsButton);
+		controlsButton.setBounds(300, 200, 50, 50);
+		controlsButton.setFocusable(false);
+		controlsButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				Menu menu = new Menu();
+				menu.controlHelp();
 			}
 		});
 		

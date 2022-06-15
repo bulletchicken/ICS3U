@@ -6,15 +6,50 @@ public class Menu {
 	static String playerName = "";
 
 	class playerScore{ //I will make a map array out of this
-		String name = "empty";
-		int score = 0;
+		String name;
+		int score;
 	}
 	BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+	boolean gameStart = false;
 	
 	public static void main(String[]args) throws IOException {
-		System.out.println("\n-----Finding Timo-----\n");
+		
 		Menu m = new Menu();
-		m.displayIntro();
+		//m.rules();
+		//m.controlHelp();
+		System.out.println("\n-----Finding Timo-----");
+		System.out.println("      by Jeremy\n");
+		System.out.println("This is timo...");
+		System.out.println("\n      oo/><><>\\\n     ( -)><><><>\n      L|_|L|_|`) ");
+		System.out.println("\n            ...he is lost.\n");
+		m.displayIntro(); //includes : method1, method2
+		
+	}
+	
+	public void displayIntro() throws IOException {
+		FindingTimo fT = new FindingTimo();
+
+		System.out.print("Can you help me find him?... (Yes|No): ");
+		gameStart = continuePlaying();
+		if(gameStart) { //if yes
+			playerName = nameInput();
+			System.out.println("What an excellent name " + playerName + "!");
+			fT.run();
+			System.out.println("!!!Make sure to have the window open ontop to utilize keyboard controls!!!");
+			System.out.println("Enter 'rules' or 'controls' to display help menus");
+			
+			//it asks for the loop to run once more before ending. How to remove... //ill just move this to the update
+		} else { //if no
+			goodbye();
+		}
+	}
+	public void helpRequest() throws IOException {
+		String option = br.readLine();
+		if(option.equals("rules")) rules();
+		else if(option.equals("controls")) controlHelp();
+		else {
+			System.out.println("invalid option. Enter 'rules' or 'controls' to display help");
+		}
 	}
 	
 	public boolean continuePlaying()throws IOException{
@@ -22,11 +57,14 @@ public class Menu {
 		final String END = "no";
 
 		String answer = br.readLine().toLowerCase();
-
+		
 		if(answer.equals(CONTINUE)){
+			System.out.println("Great!");
+			gameStart = true;
 			return true;
 		}
 		else if (answer.equals(END)){
+			System.out.println("it looks like i will have to do it myself...");
 			return false;
 		}
 		else{
@@ -58,39 +96,39 @@ public class Menu {
 	public playerScore[] extractLeaderBoard() throws FileNotFoundException{
 	
 		File board = new File("src/leaderboard.txt");
-		Scanner fileReader = new Scanner(board);
+		Scanner count = new Scanner(board);
 		
 		//go back to the previous state where i count the lines then i go add into an array
 		
 		
 		int numOfSubmissions = 0;
-		while(fileReader.hasNext()) {
-			fileReader.next();
-			numOfSubmissions++;
-		}
-		fileReader.close();
 		
+		try {
+			while(count.hasNext()) {
+				count.nextLine();
+				numOfSubmissions++;
+			}
+			count.close();
+		}catch(Exception e) {
+			e.getStackTrace();
+		}
 		//reset
-		System.out.println(numOfSubmissions);
-		fileReader = new Scanner(board);
-		
 		playerScore [] extracted = new playerScore[numOfSubmissions];
-
-		for(int i = 0; i < numOfSubmissions; i++){
-			System.out.println(i);
-			extracted[i] = new playerScore();
+		try {
+			Scanner fileReader = new Scanner(board);
 			
-			String nameFromFile = fileReader.next();
-			int scoreFromFile = Integer.parseInt(fileReader.next());
-			
-			extracted[i].name = nameFromFile;
-			extracted[i].score = scoreFromFile;
+			while(numOfSubmissions-->0&&fileReader.hasNext()) {
+				
+				extracted[numOfSubmissions] = new playerScore();
+				extracted[numOfSubmissions].name = fileReader.next();
+				extracted[numOfSubmissions].score = fileReader.nextInt();
+			}
+			fileReader.close();
+		}catch(Exception e) {
+			e.getStackTrace();
 		}
-		
 
-		fileReader.close();
-		extracted = insertionSort(extracted, numOfSubmissions);
-		return extracted;
+		return insertionSort(extracted, extracted.length);
 		
 		//here remove the last value from the list
 	}
@@ -129,28 +167,20 @@ public class Menu {
 	}
 	
 	
-	public void endingScreen(int score) {
+	public void endingScreen(int score){
 		SetUpControls.closeWindow();
-		System.out.println("You win!");
 		addScore(score);
 		displayBoard();
-	}
-
-	public void displayIntro() throws IOException {
-		FindingTimo fT = new FindingTimo();
-		System.out.println("This is timo...");
-		System.out.println("\n    oo/><><>\\\n   ( -)><><><>\n    L|_|L|_|`) ");
-		System.out.println("\n        ...he is lost\n");
-		
-		System.out.print("Would you like to find him? (Yes|No): ");
-		if(continuePlaying()) {
-			playerName = nameInput();
-			System.out.println("What an excellent name " + playerName);
-			fT.run();
-		} else {
-			goodbye();
+		gameStart = false;
+		System.out.println("\nwait what?!? timo is lost again!");
+		try {
+			displayIntro();
+		}catch(IOException e) {
+			e.printStackTrace(); 
 		}
 	}
+
+
 	public String nameInput() throws IOException {
 		
 		System.out.print("What is your name? : ");
@@ -178,6 +208,29 @@ public class Menu {
 
 			return intInput();
 		}
+	}
+	
+	public void rules(){
+		System.out.println("\n-----Rules-----\n");
+		System.out.println("Timo is lost and needs your help finding\nhim. In order to find him, you will have\nto traverse a 3d grid.\n");
+		System.out.println("There are three floors to the 15x15 grid.\nAt first it is blank, but as you move,\nthe area around you becomes 'explored'.");
+		System.out.println("While by you won't be able to see\nanything, explored areas will reveal\nwhenever timo or other npcs walk on it.\n");
+		System.out.println("When you eventually find timo, you will\nbe given a random destinationwhere you\nmust return him and win the game.");
+		System.out.println("Unfortunately for you, npcs will be\nchasing you as you move\n");
+	}
+	
+	public void controlHelp(){
+		System.out.println("\n-----Controls-----\n");
+		System.out.println("!!!This game utilizes keyboard input so make sure to have the controls window open on top when the game starts!!!\n");
+		
+		System.out.println("- press 'w' to move foward\n- press 'a' to move left\n- press 's' to move backwards\n- press 'd' to move right\n- press arrowup to go up a floor\n- press arrowdown to go down a floor\n");
+		
+		System.out.println("You have a few tools:");
+		System.out.println("- a tracker above the grid which shows how far you are from timo\n- a control screen which changes colours depending on how hot or cold you are to him");
+		System.out.println("- a gps which shows your current coordinates\n- a hint button which allows you to find his location at the cost of adding 5 moves to your score");
+		System.out.println("\nThere are a few admin tools:");
+		System.out.println("- a win button which allows you to instantly win the game\n- a give up button which allows you to instantly lose the game\n");
+		System.out.println("\n---------------\n");
 	}
 	
 	private void addScore(int score) {

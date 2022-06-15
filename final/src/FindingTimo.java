@@ -7,7 +7,7 @@ public class FindingTimo {
 		int yCord;
 		int zCord;
 		int numOfMoves;
-		boolean found;
+		boolean found;		
 	}
 	//update
 
@@ -36,6 +36,7 @@ public class FindingTimo {
 
 		if(timo.found||onTurtle()) {
 			if(atBedroom()){
+				System.out.println("You win!");
 				m.endingScreen(player.numOfMoves);
 				return; //breaks the method
 			}
@@ -180,7 +181,6 @@ public class FindingTimo {
 		options[4] = numOfOption;
 
 		return options;
-
 	}
 
 
@@ -280,11 +280,16 @@ public class FindingTimo {
 		SetUpControls.setControls();
 		//starting cords
 		
+		
+		
 		timo.xCord = (int)(Math.random()*mWidth);
 		timo.yCord = (int)(Math.random()*mLength);
 		timo.zCord = (int)(Math.random()*height);
 		
+		
 		//starting cords in the middle
+		
+		player = new Character();
 		player.xCord = mWidth/2;
 		player.yCord = mLength/2;
 		player.zCord = 0;
