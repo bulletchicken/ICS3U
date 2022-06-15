@@ -280,8 +280,7 @@ public class FindingTimo {
 		SetUpControls.setControls();
 		//starting cords
 		
-		
-		
+		timo = new Character();
 		timo.xCord = (int)(Math.random()*mWidth);
 		timo.yCord = (int)(Math.random()*mLength);
 		timo.zCord = (int)(Math.random()*height);
