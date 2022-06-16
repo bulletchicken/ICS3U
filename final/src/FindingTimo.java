@@ -13,6 +13,7 @@ public class FindingTimo {
 
 	static Character timo = new Character();
 	static Character player = new Character();
+	static Character hunter = new Character();
 	Character finish = new Character();
 
 	final static int mLength = 15; //vertical
@@ -24,6 +25,46 @@ public class FindingTimo {
 
 	int previousDistance = distanceBetween();
 	
+	public void run() {
+
+		SetUpControls.setControls();
+		//starting cords
+		
+		finish.xCord = (int)(Math.random()*mWidth);
+		finish.yCord = (int)(Math.random()*mLength);
+		finish.zCord = (int)(Math.random()*height);
+		//
+		
+		timo = new Character();
+		timo.xCord = (int)(Math.random()*mWidth);
+		timo.yCord = (int)(Math.random()*mLength);
+		timo.zCord = (int)(Math.random()*height);
+		
+		//make the hunter start at timo
+		
+		hunter.xCord = timo.xCord;
+		hunter.yCord = timo.yCord;
+		hunter.zCord = timo.zCord;
+		
+		
+		//starting cords in the middle
+		
+		player = new Character();
+		player.xCord = mWidth/2;
+		player.yCord = mLength/2;
+		player.zCord = 0;
+
+		//setup the map and resets it on every run
+		for(int i = 0; i < map.length; i++) {
+			for(int j = 0; j < map[0].length; j++) {
+				for(int k = 0; k < map[0][0].length; k++) {
+					map[i][j][k] = ' ';
+				}
+			}
+		}
+		update();
+	}
+	
 	public void update() { 
 		String[]alphabet = "abcdefghijklmnopqrstuvwxyz".split("");
 		final char VISIONCONES = '.';
@@ -33,8 +74,10 @@ public class FindingTimo {
 
 		player.numOfMoves++;
 		vision(VISIONCONES);
+		
+		
 
-		if(timo.found||onTurtle()) {
+		if(timo.found||checkOnTop(timo)) {
 			if(atBedroom()){
 				System.out.println("You win!");
 				m.endingScreen(player.numOfMoves);
@@ -45,13 +88,22 @@ public class FindingTimo {
 			System.out.println("Timo has not been found...");
 			turtleMoveTracker(VISIONCONES);
 		}
+		hunterMovement(VISIONCONES);
+		System.out.println(alphabet[hunter.xCord] + " " + (hunter.yCord+1));
+		
+		if(checkOnTop(hunter)){
+			System.out.println("You were caught!");
+			m.loseScreen();
+			return;
+		}
+		
 
 		map[player.yCord][player.xCord][player.zCord] = 'x';
 
 		displayGrid(player.zCord, alphabet);
 	}
 	
-	public void displayGrid(int floor, String[]alphabet) {
+	private void displayGrid(int floor, String[]alphabet) {
 
 		System.out.println("Move #" + player.numOfMoves);
 		System.out.println("Current Location: " + "(" + alphabet[player.xCord] + ", "+(player.yCord+1) + ", " + (player.zCord+1) + ")");
@@ -69,7 +121,7 @@ public class FindingTimo {
 		}
 	}
 	
-	public boolean atBedroom() {
+	private boolean atBedroom() {
 
 		//make a random point the player has to reach on another floor
 		if(player.yCord == finish.yCord && player.xCord == finish.xCord && player.zCord == finish.zCord){
@@ -78,27 +130,23 @@ public class FindingTimo {
 		return false;
 	}
 
-	public boolean onTurtle() {
-		if(timo.xCord==player.xCord&&timo.yCord==player.yCord&&timo.zCord==player.zCord) {
-			timo.found = true;
-			System.out.println("Caputred the turtle!");
-
-			finish.xCord = (int)(Math.random()*mWidth);
-			finish.yCord = (int)(Math.random()*mLength);
-			finish.zCord = (int)(Math.random()*height);
+	private boolean checkOnTop(Character onTop) {
+		if(onTop.xCord==player.xCord&&onTop.yCord==player.yCord&&onTop.zCord==player.zCord) {
+			onTop.found = true;
 
 			return true;
 		}
 		return false;
 	}
 	
-	public void turtleMove(char VISIONCONES){
-		
-		final char poop = 'o';
+	
+	//turtle methods
+	
+	private void turtleMove(char VISIONCONES){
 		
 		byte direction;
 
-		byte [] turtleDirection = moveGenerator(timo, poop); 
+		byte [] turtleDirection = moveGenerator(timo); 
 		
 		//direction 0 = up or down
 		//direction 1 = forward
@@ -147,7 +195,7 @@ public class FindingTimo {
 
 	}
 
-	public byte[] moveGenerator(Character movement, char poop) {
+	private byte[] moveGenerator(Character movement) {
 		
 		
 		final byte maxNumOfOptions = 5; //4 slots for moves, 1 slot at end for number of available moves
@@ -185,14 +233,14 @@ public class FindingTimo {
 
 
 	//have to compare ghostMap everytime vision is called.
-	public boolean canBeSeen(Character inQuestion, char VISIONCONES) {
+	private boolean canBeSeen(Character inQuestion, char VISIONCONES) {
 		if(map[inQuestion.yCord][inQuestion.xCord][inQuestion.zCord]==VISIONCONES) {
 			return true;
 		}
 		return false;
 	}
 
-	public void vision(char VISIONCONES) {
+	private void vision(char VISIONCONES) {
 		
 		//update the try catch to remove unncessary catch
 		if(player.yCord<mLength-1) {
@@ -226,7 +274,7 @@ public class FindingTimo {
 
 	}
 
-	public int distanceBetween(){ //this method must be called after the changes like distanceBetween(smth.xCord-1) | can be called before
+	private int distanceBetween(){ //this method must be called after the changes like distanceBetween(smth.xCord-1) | can be called before
 		int distance = Math.abs(timo.xCord-player.xCord) + Math.abs(timo.yCord-player.yCord);
 		return distance;
 	}
@@ -272,37 +320,37 @@ public class FindingTimo {
 			map[timo.yCord][timo.xCord][timo.zCord]='!';
 		}
 	}
-
-	public void run() {
+	
+	
+	
+	
+	private void hunterMovement(char VISIONCONES){
 		
+		byte deltaX = (byte) Math.abs(player.xCord-hunter.xCord);
+		byte deltaY = (byte) Math.abs(player.yCord-hunter.yCord);
 		
-		
-		SetUpControls.setControls();
-		//starting cords
-		
-		timo = new Character();
-		timo.xCord = (int)(Math.random()*mWidth);
-		timo.yCord = (int)(Math.random()*mLength);
-		timo.zCord = (int)(Math.random()*height);
-		
-		
-		//starting cords in the middle
-		
-		player = new Character();
-		player.xCord = mWidth/2;
-		player.yCord = mLength/2;
-		player.zCord = 0;
-
-		//setup the map and resets it on every run
-		for(int i = 0; i < map.length; i++) {
-			for(int j = 0; j < map[0].length; j++) {
-				for(int k = 0; k < map[0][0].length; k++) {
-					map[i][j][k] = ' ';
-				}
-			}
+		if(player.xCord-hunter.xCord<0 && deltaX<deltaY){
+			System.out.println("hunter move left");
+			hunter.xCord--;
 		}
-		update();
+		else if(player.xCord-hunter.xCord>0 && deltaX>deltaY){
+			System.out.println("hunter move right");
+			hunter.xCord++;
+		}
+		else if(player.yCord-hunter.yCord<0 && deltaY<deltaX){
+			System.out.println("hunter move down");
+			hunter.yCord++;
+		} 
+		else if(player.yCord-hunter.yCord>0 && deltaY>deltaX){
+			System.out.println("hunter move up");
+			hunter.yCord--;
+		}
+		if(map[hunter.yCord][hunter.xCord][hunter.zCord]=='!') {
+			map[hunter.yCord][hunter.xCord][hunter.zCord] = VISIONCONES;
+		} else if (!canBeSeen(hunter, VISIONCONES)){
+			map[hunter.yCord][hunter.xCord][hunter.zCord] = ' ';
+		}
+		
 	}
-
 
 }

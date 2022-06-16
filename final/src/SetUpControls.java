@@ -4,6 +4,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+@SuppressWarnings("serial")
 public class SetUpControls extends JFrame implements KeyListener{
 
 	static FindingTimo fT = new FindingTimo();
@@ -32,7 +33,7 @@ public class SetUpControls extends JFrame implements KeyListener{
 		giveUp.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				System.out.println("You lose :( ");
+				m.loseScreen();
 			}
 		});
 		
@@ -62,14 +63,14 @@ public class SetUpControls extends JFrame implements KeyListener{
 		winButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				m.endingScreen(fT.player.numOfMoves);
+				m.endingScreen(FindingTimo.player.numOfMoves);
 			}
 		});
 		
 		//rules button
 		JButton rulesButton = new JButton("rules");
 		frame.add(rulesButton);
-		rulesButton.setBounds(250, 200, 50, 50);
+		rulesButton.setBounds(200, 200, 100, 50);
 		rulesButton.setFocusable(false);
 		rulesButton.addActionListener(new ActionListener() {
 			@Override
@@ -82,7 +83,7 @@ public class SetUpControls extends JFrame implements KeyListener{
 		//controls button
 		JButton controlsButton = new JButton("controls");
 		frame.add(controlsButton);
-		controlsButton.setBounds(300, 200, 50, 50);
+		controlsButton.setBounds(300, 200, 100, 50);
 		controlsButton.setFocusable(false);
 		controlsButton.addActionListener(new ActionListener() {
 			@Override
@@ -145,7 +146,7 @@ public class SetUpControls extends JFrame implements KeyListener{
 			
 		//checks if user presses d
 		case 'd':
-			if(xPlayer<fT.mWidth-1) {
+			if(xPlayer<FindingTimo.mWidth-1) {
 				FindingTimo.player.xCord++;
 				fT.update();
 			} else {
@@ -159,7 +160,7 @@ public class SetUpControls extends JFrame implements KeyListener{
 		//checks if user presses up
 		case KeyEvent.VK_UP:
 			if(zPlayer<2) {
-				fT.map[yPlayer][xPlayer][zPlayer] = '.';
+				FindingTimo.map[yPlayer][xPlayer][zPlayer] = '.';
 				FindingTimo.player.zCord++;
 				fT.update();
 			} else {
@@ -170,7 +171,7 @@ public class SetUpControls extends JFrame implements KeyListener{
 		//checks if user presses down
 		case KeyEvent.VK_DOWN:
 			if(zPlayer>0) {
-				fT.map[yPlayer][xPlayer][zPlayer] = '.';
+				FindingTimo.map[yPlayer][xPlayer][zPlayer] = '.';
 				FindingTimo.player.zCord--;
 				fT.update();
 			} else {
