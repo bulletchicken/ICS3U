@@ -1,3 +1,21 @@
+/*=====================================
+ * SetUpControls
+ * Jeremy Su
+ * June 17, 2022
+ * Java 8
+ * ====================================
+ * - Problem Definition: Required keyboard and mouse input and interface to provide 
+ * user with game controls
+ * - Input: keypress "w", "a", "s", "d", UP and DOWN arrowkeys as well as Mouse clicks on buttons
+ * - Output: Converted user input and warnings for out of bound movements. Also opens up a control
+ * panel where buttons are stored and keypresses are read, as well as change colours indicating hot and cold
+ * - Processing: converts user input into game movements and calls methods in the FindingTimo class
+ * ====================================
+ * List of Variables
+ * let fT represent an object to access non-static methods within the FindingTimo class (type FindingTimo)
+ * let frame represent an object created by the JFrame class that houses all the buttons (type JFrame)
+ */
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -5,12 +23,30 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 @SuppressWarnings("serial")
+
 public class SetUpControls extends JFrame implements KeyListener{
 
 	static FindingTimo fT = new FindingTimo();
 	static JFrame frame;
 	//making jframe a global so I can access it from another method and ultimately another class
 	
+	
+	/*setControls method:
+	 * this procedural method is used to create and give properties to the frame and the buttons 
+	 * 
+	 * List of local variables
+	 * let m represent an object to access non-static methods within the Menu class (type Menu)
+	 * let alphabet represent all the letters in the alphabet used to convert x-coordinates to letter coordinates (type String[])
+	 * let giveUp represent the give up button (type JButton)
+	 * let huntButton represent the hint button (type JButton)
+	 * let winButton represent the win button (type JButton)
+	 * let rulesButton represent the rules button (type JButton)
+	 * let controlsButton represent the controls button (type JButton)
+	 * let reveal represent the reveal button (type JButton)
+	 * let listen represent an object to access non-static methods within the SetUpControls class (type SetUpControls)
+	 * @param none
+	 * @return void
+	 */
 	public static void setControls(){
 		frame = new JFrame("Controls Window (Keep this tab on top to use controls)");
 		Menu m = new Menu();
@@ -32,6 +68,11 @@ public class SetUpControls extends JFrame implements KeyListener{
 		giveUp.setFocusable(false);
 		giveUp.addActionListener(new ActionListener(){
 			@Override
+			/* actionPerformed method:
+			 * this procedural method will call the loseScreen method in the Menu class
+			 * @param arg0 (type ActionEvent)
+			 * @return void
+			 */
 			public void actionPerformed(ActionEvent arg0) {
 				m.loseScreen();
 			}
@@ -44,6 +85,11 @@ public class SetUpControls extends JFrame implements KeyListener{
 		hintButton.setFocusable(false);
 		hintButton.addActionListener(new ActionListener(){
 			@Override
+			/* actionPerformed method:
+			 * this procedural method will reveal timo's location but add 5 moves onto the player's score
+			 * @param arg0 (type ActionEvent)
+			 * @return void
+			 */
 			public void actionPerformed(ActionEvent arg0){
 				if(!FindingTimo.timo.found){
 					System.out.println("timo's current location (he's still on the run!) : " + alphabet[FindingTimo.timo.xCord] +" "+ (FindingTimo.timo.yCord+1) +" "+ (FindingTimo.timo.zCord+1)); //save this for the hint
@@ -62,6 +108,11 @@ public class SetUpControls extends JFrame implements KeyListener{
 		winButton.setFocusable(false);
 		winButton.addActionListener(new ActionListener() {
 			@Override
+			/* actionPerformed method:
+			 * this procedural method will call the endingScreen method in the Menu class
+			 * @param arg0 (type ActionEvent)
+			 * @return void
+			 */
 			public void actionPerformed(ActionEvent arg0) {
 				m.endingScreen(FindingTimo.player.numOfMoves);
 			}
@@ -74,9 +125,13 @@ public class SetUpControls extends JFrame implements KeyListener{
 		rulesButton.setFocusable(false);
 		rulesButton.addActionListener(new ActionListener() {
 			@Override
+			/* actionPerformed method:
+			 * this procedural method will call the rules method in the Menu class
+			 * @param arg0 (type ActionEvent)
+			 * @return void
+			 */
 			public void actionPerformed(ActionEvent arg0) {
-				Menu menu = new Menu();
-				menu.rules();
+				m.rules();
 			}
 		});
 		
@@ -87,9 +142,13 @@ public class SetUpControls extends JFrame implements KeyListener{
 		controlsButton.setFocusable(false);
 		controlsButton.addActionListener(new ActionListener() {
 			@Override
+			/* actionPerformed method:
+			 * this procedural method will call the controlHelp method in the Menu class
+			 * @param arg0 (type ActionEvent)
+			 * @return void
+			 */
 			public void actionPerformed(ActionEvent arg0) {
-				Menu menu = new Menu();
-				menu.controlHelp();
+				m.controlHelp();
 			}
 		});
 		
@@ -100,6 +159,11 @@ public class SetUpControls extends JFrame implements KeyListener{
 		reveal.setFocusable(false);
 		reveal.addActionListener(new ActionListener() {
 			@Override
+			/* actionPerformed method:
+			 * this procedural method will call the revealMap method in the Menu class
+			 * @param arg0 (type ActionEvent)
+			 * @return void
+			 */
 			public void actionPerformed(ActionEvent arg0) {
 				fT.revealMap();
 			}
@@ -110,9 +174,25 @@ public class SetUpControls extends JFrame implements KeyListener{
 		frame.addKeyListener(listen);
 		//will remain passively active 
 		
-	}
+	}//end setControls
 	
-	
+	/* keyPressed method:
+	 * this procedural method will run anytime the frame captures keyboard input, converting the input
+	 * into game values and movements
+	 * 
+	 * List of Local Variables
+	 * let yPlayer represent the y coordinates of player (type int)
+	 * let xPlayer represent the x coordinates of player (type int)
+	 * let zPlayer represent the z coordinates of player (type int)
+	 * let yHunter represent the y coordinates of hunter (type int)
+	 * let xHunter represent the x coordinates of hunter (type int)
+	 * let zHunter represent the z coordinates of hunter (type int)
+	 * let move represent the letter from keyboard (type char)
+	 * 
+	 * @param
+	 * e - what ever key that was pressed and received by the frame (type KeyEvent)
+	 * @return void
+	 */
 	@Override
 	public void keyPressed(KeyEvent e) {
 		
@@ -202,21 +282,28 @@ public class SetUpControls extends JFrame implements KeyListener{
 			break;
 		}
 		
+	}//end keyPressed method
+	
+	/*closeWindow method:
+	 * this procedural closes the controls frame
+	 * @param none
+	 * @return void
+	 */
+	public static void closeWindow() {
+		frame.dispose();
 	}
+	
+	
 	
 	@Override
 	public void keyReleased(KeyEvent e) {
-		//empty. Must be implemeneted because of keylistener
+		//empty. Must be implemented because of keylistener
 		
 	}
 	@Override
 	public void keyTyped(KeyEvent e) {
-		
-		
+		//empty. Must be implemented because of keylistener
 	}
-	
-	public static void closeWindow() {
-		frame.dispose();
-	}
+
 	
 }

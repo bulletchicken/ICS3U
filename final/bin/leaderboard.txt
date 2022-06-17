@@ -11,6 +11,3 @@ TimosMom 4
 TimosSister 23
 TimosBrother 89
 Gitimo 32
-sdf 59
-asd 49
-asd 70
