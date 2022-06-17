@@ -70,7 +70,7 @@ public class SetUpControls extends JFrame implements KeyListener{
 		//rules button
 		JButton rulesButton = new JButton("rules");
 		frame.add(rulesButton);
-		rulesButton.setBounds(200, 200, 100, 50);
+		rulesButton.setBounds(150, 200, 100, 50);
 		rulesButton.setFocusable(false);
 		rulesButton.addActionListener(new ActionListener() {
 			@Override
@@ -83,13 +83,25 @@ public class SetUpControls extends JFrame implements KeyListener{
 		//controls button
 		JButton controlsButton = new JButton("controls");
 		frame.add(controlsButton);
-		controlsButton.setBounds(300, 200, 100, 50);
+		controlsButton.setBounds(250, 200, 100, 50);
 		controlsButton.setFocusable(false);
 		controlsButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				Menu menu = new Menu();
 				menu.controlHelp();
+			}
+		});
+		
+		//reveal button
+		JButton reveal = new JButton("reveal map");
+		frame.add(reveal);
+		reveal.setBounds(350, 200, 100, 50);
+		reveal.setFocusable(false);
+		reveal.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				fT.revealMap();
 			}
 		});
 		
@@ -107,6 +119,10 @@ public class SetUpControls extends JFrame implements KeyListener{
 		int yPlayer = FindingTimo.player.yCord;
 		int xPlayer = FindingTimo.player.xCord;
 		int zPlayer = FindingTimo.player.zCord;
+		
+		int yHunter = FindingTimo.hunter.yCord;
+		int xHunter = FindingTimo.hunter.xCord;
+		int zHunter = FindingTimo.hunter.zCord;
 		
 		char move = e.getKeyChar();
 		
@@ -162,6 +178,9 @@ public class SetUpControls extends JFrame implements KeyListener{
 			if(zPlayer<2) {
 				FindingTimo.map[yPlayer][xPlayer][zPlayer] = '.';
 				FindingTimo.player.zCord++;
+				
+				FindingTimo.map[yHunter][xHunter][zHunter] = ' ';
+				FindingTimo.hunter.zCord++;
 				fT.update();
 			} else {
 				System.out.println("Already at the top floor");
@@ -173,6 +192,9 @@ public class SetUpControls extends JFrame implements KeyListener{
 			if(zPlayer>0) {
 				FindingTimo.map[yPlayer][xPlayer][zPlayer] = '.';
 				FindingTimo.player.zCord--;
+				
+				FindingTimo.map[yHunter][xHunter][zHunter] = ' ';
+				FindingTimo.hunter.zCord--;
 				fT.update();
 			} else {
 				System.out.println("Already at the bottom floor");

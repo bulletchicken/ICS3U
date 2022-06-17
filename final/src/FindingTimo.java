@@ -14,7 +14,7 @@ public class FindingTimo {
 	static Character timo = new Character();
 	static Character player = new Character();
 	static Character hunter = new Character();
-	Character finish = new Character();
+	static Character finish = new Character();
 
 	final static int mLength = 15; //vertical
 	final static int mWidth = 15; //horizontal
@@ -44,7 +44,7 @@ public class FindingTimo {
 		
 		hunter.xCord = timo.xCord;
 		hunter.yCord = timo.yCord;
-		hunter.zCord = timo.zCord;
+		hunter.zCord = 0;
 		
 		
 		//starting cords in the middle
@@ -75,8 +75,6 @@ public class FindingTimo {
 		player.numOfMoves++;
 		vision(VISIONCONES);
 		
-		
-
 		if(timo.found||checkOnTop(timo)) {
 			if(atBedroom()){
 				System.out.println("You win!");
@@ -88,16 +86,27 @@ public class FindingTimo {
 			System.out.println("Timo has not been found...");
 			turtleMoveTracker(VISIONCONES);
 		}
-		hunterMovement(VISIONCONES);
-		System.out.println(alphabet[hunter.xCord] + " " + (hunter.yCord+1));
 		
-		if(checkOnTop(hunter)){
+		if(checkOnTop(hunter)){ 
 			System.out.println("You were caught!");
 			m.loseScreen();
 			return;
 		}
+		if(player.numOfMoves%3==0) { //make it run two every three 
+			for(int i = 0; i < 2; i++) {
+				hunterMovement(VISIONCONES);
+				if(checkOnTop(hunter)){
+					System.out.println("You were caught!");
+					m.loseScreen();
+					return;
+				}
+			}
+			
+		}
+		if(canBeSeen(hunter, VISIONCONES)) {
+			map[hunter.yCord][hunter.xCord][hunter.zCord]='h';
+		}
 		
-
 		map[player.yCord][player.xCord][player.zCord] = 'x';
 
 		displayGrid(player.zCord, alphabet);
@@ -326,31 +335,55 @@ public class FindingTimo {
 	
 	private void hunterMovement(char VISIONCONES){
 		
-		byte deltaX = (byte) Math.abs(player.xCord-hunter.xCord);
-		byte deltaY = (byte) Math.abs(player.yCord-hunter.yCord);
+		int deltaX = player.xCord-hunter.xCord;
+		int deltaY = player.yCord-hunter.yCord;
 		
-		if(player.xCord-hunter.xCord<0 && deltaX<deltaY){
-			System.out.println("hunter move left");
-			hunter.xCord--;
-		}
-		else if(player.xCord-hunter.xCord>0 && deltaX>deltaY){
-			System.out.println("hunter move right");
-			hunter.xCord++;
-		}
-		else if(player.yCord-hunter.yCord<0 && deltaY<deltaX){
-			System.out.println("hunter move down");
-			hunter.yCord++;
-		} 
-		else if(player.yCord-hunter.yCord>0 && deltaY>deltaX){
-			System.out.println("hunter move up");
-			hunter.yCord--;
-		}
-		if(map[hunter.yCord][hunter.xCord][hunter.zCord]=='!') {
+		int distanceX = Math.abs(deltaX);
+		int distanceY = Math.abs(deltaY);
+		
+		if(map[hunter.yCord][hunter.xCord][hunter.zCord]=='h') {
 			map[hunter.yCord][hunter.xCord][hunter.zCord] = VISIONCONES;
-		} else if (!canBeSeen(hunter, VISIONCONES)){
-			map[hunter.yCord][hunter.xCord][hunter.zCord] = ' ';
 		}
 		
+		if(distanceX>=distanceY) {
+			//left right
+			
+			if(deltaX>0&&hunter.xCord+1<mWidth) {
+				System.out.println("going right");
+				hunter.xCord++;
+			}
+			if(deltaX<0&&hunter.xCord-1>=0) {
+				System.out.println("going left");
+				hunter.xCord--;
+			}
+		}
+		
+		if(distanceX<distanceY) {
+			//up down
+			
+			if(deltaY>0&&hunter.yCord+1<mWidth) {
+				System.out.println("go down");
+				hunter.yCord++;
+			}
+			if(deltaY<0&&hunter.yCord-1>=0) {
+				System.out.println("going up");
+				hunter.yCord--;
+			}
+			
+		}
+		
+	}
+	
+	public void revealMap() {
+		for(int i = 0; i < mWidth; i++) {
+			for(int j = 0; j < mLength; j++) {
+				for(int x = 0; x < height; x++) {
+					map[j][i][x] = '.';
+				}
+			}
+		}
+		
+		update();
 	}
 
 }
